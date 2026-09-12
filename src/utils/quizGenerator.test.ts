@@ -354,7 +354,7 @@ describe('generateQuiz', () => {
     expect(en.questions.find((q) => q.subject === 'Cuba')?.subjectLabel).toBeUndefined()
   })
 
-  it('in FR, the sidecar only fixes wrong auto-derived labels (accents, acronyms)', () => {
+  it('in FR, the sidecar only fixes wrong or ambiguous auto-derived labels', () => {
     const plain = generateQuiz(caribbeanRows, schema, { seed: 'test' })
     const fixed = generateQuiz(caribbeanRows, schema, { seed: 'test', i18n: caribbeanI18n })
     const label = (quiz: typeof plain, id: string) => quiz.categories.find((category) => category.id === id)?.label
@@ -364,9 +364,14 @@ describe('generateQuiz', () => {
     expect(label(fixed, 'densite_hab_km2')).toBe('Densité')
     expect(label(fixed, 'independance')).toBe('Indépendance')
     expect(label(fixed, 'regime_politique')).toBe('Régime politique')
+    // les coordonnées/l'altitude portées par le CSV sont celles de la capitale / du point
+    // culminant, pas du « pays » au sens large : le libellé auto-dérivé était ambigu.
+    expect(label(fixed, 'latitude_deg')).toBe('Latitude de la capitale')
+    expect(label(fixed, 'longitude_deg')).toBe('Longitude de la capitale')
+    expect(label(fixed, 'altitude_m')).toBe('Altitude du point culminant')
     // rien d'autre ne bouge : mêmes questions, mêmes ids, même ordre
     expect(fixed.questions.map((q) => q.id)).toEqual(plain.questions.map((q) => q.id))
-    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident|r[ée]gime/i
+    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident|r[ée]gime|latitude|longitude|altitude/i
     const untouched = (quiz: typeof plain) => quiz.questions.map((q) => q.question).filter((q) => !corrected.test(q))
     expect(untouched(fixed)).toEqual(untouched(plain))
   })

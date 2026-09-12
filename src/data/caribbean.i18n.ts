@@ -138,14 +138,14 @@ const articles: DataI18n['articles'] = {
 // on les corrige ici pour `fr` aussi (accents, acronymes).
 const columnLabels: DataI18n['columnLabels'] = {
   capitale: { en: 'capital', es: 'capital', nl: 'hoofdstad', ht: 'kapital' },
-  latitude: { en: 'latitude', es: 'latitud', nl: 'breedtegraad', ht: 'latitid' },
-  longitude: { en: 'longitude', es: 'longitud', nl: 'lengtegraad', ht: 'lonjitid' },
+  latitude: { fr: 'latitude de la capitale', en: 'latitude of the capital', es: 'latitud de la capital', nl: 'breedtegraad van de hoofdstad', ht: 'latitid kapital la' },
+  longitude: { fr: 'longitude de la capitale', en: 'longitude of the capital', es: 'longitud de la capital', nl: 'lengtegraad van de hoofdstad', ht: 'lonjitid kapital la' },
   population: { en: 'population', es: 'población', nl: 'bevolking', ht: 'popilasyon' },
   superficie: { en: 'area', es: 'superficie', nl: 'oppervlakte', ht: 'sipèfisi' },
   densite: { fr: 'densité', en: 'density', es: 'densidad', nl: 'dichtheid', ht: 'dansite' },
   pib: { fr: 'PIB', en: 'GDP', es: 'PIB', nl: 'bbp', ht: 'PIB' },
   'point culminant': { en: 'highest point', es: 'punto más alto', nl: 'hoogste punt', ht: 'pwen ki pi wo' },
-  altitude: { en: 'elevation', es: 'altitud', nl: 'hoogte', ht: 'altitid' },
+  altitude: { fr: 'altitude du point culminant', en: 'elevation of the highest point', es: 'altitud del punto más alto', nl: 'hoogte van het hoogste punt', ht: 'altitid pwen ki pi wo a' },
   monnaie: { en: 'currency', es: 'moneda', nl: 'munt', ht: 'lajan' },
   langues: { en: 'languages', es: 'idiomas', nl: 'talen', ht: 'lang' },
   'indicatif telephonique': { fr: 'indicatif téléphonique', en: 'dialing code', es: 'prefijo telefónico', nl: 'landnummer', ht: 'endikatif telefòn' },
