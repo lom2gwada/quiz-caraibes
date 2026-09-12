@@ -242,6 +242,17 @@ describe('generateQuiz', () => {
     if (plain?.type === 'cloze') expect(plain.content.expectedAnswers).toEqual(["Port-d'Espagne"])
   })
 
+  it('skips the cloze for a row with several values in the same column (a blank would accept just one of them as complete)', () => {
+    const forSubject = (subject: string, col: string) => quiz.questions.filter((q) => q.subject === subject && q.tags.includes(col))
+    // Haïti a deux langues : pas de texte à trous, mais le QCM à réponses multiples reste généré.
+    const haitiLangues = forSubject('Haïti', 'langues')
+    expect(haitiLangues.some((q) => q.type === 'cloze')).toBe(false)
+    expect(haitiLangues.some((q) => q.type === 'qcm' && q.content.multiple)).toBe(true)
+    // La Jamaïque n'a qu'une langue : le texte à trous reste généré comme avant.
+    const jamaicaLangues = forSubject('Jamaïque', 'langues')
+    expect(jamaicaLangues.some((q) => q.type === 'cloze')).toBe(true)
+  })
+
   it('produces silhouette questions when shapes are supplied', () => {
     const shaped = generateQuiz(caribbeanRows, schema, {
       seed: 'test',

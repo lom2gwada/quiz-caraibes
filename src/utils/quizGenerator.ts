@@ -405,15 +405,19 @@ export function generateQuiz(
           })
         }
 
-        // Texte à trous : on masque la valeur. On accepte aussi les alias déclarés (autre nom / langue).
-        const expected = [...new Set(correctsFr.flatMap((v) => [tr(v), ...(opts.aliases?.[v] ?? [])]))]
-        questions.push({
-          id: qid([col, 'cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
-          question: T('prompt.cloze', ctx(row)),
-          topic: about, ...subj(row),
-          explanation: fact,
-          content: { expectedAnswers: expected, caseSensitive: false },
-        })
+        // Texte à trous : on masque la valeur. N'a de sens que pour une seule valeur attendue —
+        // à plusieurs (ex. langues, organisations), une case à remplir accepterait n'importe
+        // laquelle comme réponse complète ; le QCM à réponses multiples ci-dessus teste déjà ça.
+        if (corrects.length === 1) {
+          const expected = [...new Set(correctsFr.flatMap((v) => [tr(v), ...(opts.aliases?.[v] ?? [])]))]
+          questions.push({
+            id: qid([col, 'cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
+            question: T('prompt.cloze', ctx(row)),
+            topic: about, ...subj(row),
+            explanation: fact,
+            content: { expectedAnswers: expected, caseSensitive: false },
+          })
+        }
       }
     }
 
