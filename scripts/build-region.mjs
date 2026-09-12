@@ -14,10 +14,7 @@ const MIN_RING_FRAC = 0.01
 const MAX_RINGS = 10
 // Sous ce seuil (aire projetée, unités de viewBox²), la forme simplifiée devient illisible à
 // cette échelle régionale : on n'affiche qu'un point d'accent (voir RegionMap.tsx).
-const DOT_ONLY_AREA = 90
-// Exception au seuil : un archipel dispersé (îles séparées) peut rester bien reconnaissable
-// coloré même avec une aire cumulée faible — l'aire seule sous-estime sa lisibilité réelle.
-const FORCE_COLORED = new Set(['Bahamas'])
+const DOT_ONLY_AREA = 4
 
 const ringArea = r => {
   let a = 0
@@ -98,7 +95,7 @@ for (const [name, rings] of Object.entries(proj)) {
   const viewRings = rings.map(r => r.map(toView))
   const mainArea = ringArea(viewRings[0])
   const simplified = viewRings.map(r => rdpRing(r, RDP_EPS)).filter(r => r.length >= 3 && ringArea(r) >= 0.15)
-  const dotOnly = (mainArea < DOT_ONLY_AREA || simplified.length === 0) && !FORCE_COLORED.has(name)
+  const dotOnly = mainArea < DOT_ONLY_AREA || simplified.length === 0
   // `d` reste toujours renseigné, même pour un territoire `dotOnly` : sinon il disparaîtrait de
   // TOUTES les cartes (y compris comme simple repère de fond sur celle d'un autre territoire),
   // pas seulement de la sienne. `dotOnly` ne fait que dire à RegionMap.tsx de ne pas le colorer

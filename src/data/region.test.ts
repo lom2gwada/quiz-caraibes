@@ -27,13 +27,13 @@ describe('region (carte composite)', () => {
   })
 
   it('keeps a shape for a dot-only territory too — it still needs to appear as background', () => {
-    // Haïti/Jamaïque/Bahamas etc. sont `dotOnly` (silhouette trop petite pour rester lisible
-    // colorée quand ils sont eux-mêmes le sujet) mais restent des repères de fond bien réels sur
-    // la carte des territoires voisins : `d` ne doit jamais être vidé pour cette seule raison.
-    expect(region['Haïti'].dotOnly).toBe(true)
-    expect(region['Haïti'].d).toMatch(/^M/)
-    expect(region['Jamaïque'].dotOnly).toBe(true)
-    expect(region['Jamaïque'].d).toMatch(/^M/)
+    // Guadeloupe/Martinique etc. sont `dotOnly` (silhouette trop petite pour rester lisible
+    // colorée quand elles sont elles-mêmes le sujet) mais restent des repères de fond bien réels
+    // sur la carte des territoires voisins : `d` ne doit jamais être vidé pour cette seule raison.
+    expect(region['Guadeloupe'].dotOnly).toBe(true)
+    expect(region['Guadeloupe'].d).toMatch(/^M/)
+    expect(region['Martinique'].dotOnly).toBe(true)
+    expect(region['Martinique'].d).toMatch(/^M/)
   })
 
   it('flags the smallest territories as dot-only, keeps the large ones as shapes', () => {
