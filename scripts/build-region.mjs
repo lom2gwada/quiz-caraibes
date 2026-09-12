@@ -96,7 +96,11 @@ for (const [name, rings] of Object.entries(proj)) {
   const mainArea = ringArea(viewRings[0])
   const simplified = viewRings.map(r => rdpRing(r, RDP_EPS)).filter(r => r.length >= 3 && ringArea(r) >= 0.15)
   const dotOnly = mainArea < DOT_ONLY_AREA || simplified.length === 0
-  const d = dotOnly ? '' : simplified.map(r => 'M' + r.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join('L') + 'Z').join('')
+  // `d` reste toujours renseigné, même pour un territoire `dotOnly` : sinon il disparaîtrait de
+  // TOUTES les cartes (y compris comme simple repère de fond sur celle d'un autre territoire),
+  // pas seulement de la sienne. `dotOnly` ne fait que dire à RegionMap.tsx de ne pas le colorer
+  // quand c'est lui le sujet mis en avant (silhouette trop petite pour rester lisible).
+  const d = simplified.map(r => 'M' + r.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join('L') + 'Z').join('')
   const main = viewRings[0]
   const cx = main.reduce((s, p) => s + p[0], 0) / main.length
   const cy = main.reduce((s, p) => s + p[1], 0) / main.length

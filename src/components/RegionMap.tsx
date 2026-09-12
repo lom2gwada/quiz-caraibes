@@ -12,12 +12,15 @@ interface RegionMapProps {
 }
 
 /** Petite carte régionale composite : tous les territoires du jeu de données dans une même
- * projection, celui mis en avant coloré (`currentColor`). Sur la petite icône (`label` absent),
- * le point d'accent ne sert qu'aux micro-territoires (`dotOnly`) : sur un grand territoire, la
- * silhouette colorée suffit déjà à le repérer, un point en plus serait redondant. En version
- * détaillée (`label` fourni, au survol), le point reste toujours affiché : il pointe la capitale,
- * une info utile même sur un grand territoire. Position du point en % (CSS), pas en unités de
- * viewBox : sa taille reste constante à l'écran, qu'on l'affiche en petite icône ou agrandi. */
+ * projection — chacun garde sa silhouette (même `dotOnly`), sinon il disparaîtrait aussi comme
+ * simple repère de fond sur la carte d'un AUTRE territoire. Celui mis en avant est coloré
+ * (`currentColor`), sauf s'il est `dotOnly` : sa silhouette reste alors muette (trop petite pour
+ * rester lisible colorée) et seul le point d'accent le repère. Sur la petite icône (`label`
+ * absent), ce point ne sert qu'aux micro-territoires (`dotOnly`) : sur un grand territoire, la
+ * silhouette colorée suffit déjà, un point en plus serait redondant. En version détaillée (`label`
+ * fourni, au survol), le point reste toujours affiché : il pointe la capitale, une info utile même
+ * sur un grand territoire. Position du point en % (CSS), pas en unités de viewBox : sa taille
+ * reste constante à l'écran, qu'on l'affiche en petite icône ou agrandi. */
 export function RegionMap({ data, viewBox, highlight, className, label }: RegionMapProps) {
   const entry = data[highlight]
   if (!entry) return null
@@ -34,7 +37,7 @@ export function RegionMap({ data, viewBox, highlight, className, label }: Region
       <svg viewBox={viewBox} aria-hidden="true">
         <g className="region-land">
           {Object.entries(data).map(([name, shape]) => shape.d && (
-            <path key={name} d={shape.d} className={name === highlight ? 'region-hl' : undefined} />
+            <path key={name} d={shape.d} className={name === highlight && !shape.dotOnly ? 'region-hl' : undefined} />
           ))}
         </g>
       </svg>
