@@ -4,7 +4,7 @@ import type { DataI18n } from '../i18n/data'
 import { makeDatasetI18n, splitAnnotation } from '../i18n/dataset'
 import { getGrammar } from '../i18n/grammar'
 import { useLocale, useT } from '../i18n'
-import { formatNumber } from '../utils/number'
+import { formatNumericValue } from '../utils/number'
 import { CellImagePreview } from './CellImagePreview'
 
 interface DataTableProps {
@@ -35,7 +35,7 @@ export function DataTable({ rows, schema, i18n }: DataTableProps) {
   const display = (header: string, raw: string): string => {
     const trimmed = raw.trim()
     if (!trimmed) return '—'
-    if (separated.has(header) && Number.isFinite(Number(raw))) return formatNumber(Number(raw))
+    if (separated.has(header) && Number.isFinite(Number(raw))) return formatNumericValue(Number(raw), false, undefined, schema.columns[header]?.unit)
     if (schema.columns[header]?.kind === 'number') return trimmed
     const sep = schema.columns[header]?.multivalueSeparator
     if (sep) return trimmed.split(sep).map((part) => {

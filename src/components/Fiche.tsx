@@ -85,7 +85,8 @@ export function Fiche({ row, schema, shapes, region, regionViewBox, capitalColum
           let value = spec.kind === 'number' ? raw : data.value(raw)
           if (!parts && spec.kind === 'number') {
             const n = Number(raw.replace(/\s/g, '').replace(',', '.'))
-            if (Number.isFinite(n)) value = `${formatNumericValue(n, spec.isYear)}${spec.unit && !spec.isYear ? ` ${data.unit(spec.unit)}` : ''}`
+            const displayUnit = spec.unit ? data.unit(spec.unit) : undefined
+            if (Number.isFinite(n)) value = `${formatNumericValue(n, spec.isYear, undefined, displayUnit)}${displayUnit && !spec.isYear ? ` ${displayUnit}` : ''}`
           }
           return (
             <div className="fiche-fact" key={col}>

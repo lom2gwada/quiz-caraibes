@@ -164,7 +164,7 @@ export function userAnswer(question: Question, answer: AnswersByQuestion[string]
   if (question.type === 'numeric') {
     if (typeof answer !== 'string' || answer === '') return none
     const suffix = question.content.unit ? ` ${question.content.unit}` : ''
-    return `${formatNumericValue(Number(answer), question.content.isYear)}${suffix}`
+    return `${formatNumericValue(Number(answer), question.content.isYear, undefined, question.content.unit)}${suffix}`
   }
   if (!Array.isArray(answer) || !answer.length) return none
   if (question.type === 'ordering') return answer.map((id) => question.content.items.find((item) => item.id === id)?.label).join(' → ')
@@ -186,8 +186,8 @@ export function correctAnswer(question: Question, t: TFunction = frT): string {
   if (question.type === 'numeric') {
     const { target, tolerance, unit, isYear } = question.content
     const suffix = unit ? ` ${unit}` : ''
-    const shown = `${formatNumericValue(target, isYear)}${suffix}`
-    return tolerance > 0 ? `${shown} (± ${formatNumericValue(tolerance, isYear)}${suffix})` : shown
+    const shown = `${formatNumericValue(target, isYear, undefined, unit)}${suffix}`
+    return tolerance > 0 ? `${shown} (± ${formatNumericValue(tolerance, isYear, undefined, unit)}${suffix})` : shown
   }
   if (question.type === 'ordering') return question.content.correctOrder.map((id) => question.content.items.find((item) => item.id === id)?.label).join(' → ')
   if (question.type === 'boolean') return question.content.isTrue ? t('bool.true') : t('bool.false')

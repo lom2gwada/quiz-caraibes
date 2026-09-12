@@ -5,7 +5,7 @@ export function NumericQuestion({ question, answer, onChange }: { question: Ques
   const { min, max, step, unit, isYear } = question.content
   const value = typeof answer === 'string' && answer !== '' ? Number(answer) : Math.round((min + max) / 2)
   const suffix = unit ? ` ${unit}` : ''
-  const show = (n: number) => `${formatNumericValue(n, isYear)}${suffix}`
+  const show = (n: number) => `${formatNumericValue(n, isYear, undefined, unit)}${suffix}`
   return <div className="numeric">
     <input type="range" className="numeric-range" min={min} max={max} step={step} value={value} onChange={(event) => onChange(event.target.value)} />
     <div className="numeric-value">{show(value)}</div>

@@ -226,6 +226,17 @@ describe('generateQuiz', () => {
     expect(lon.some((q) => q.question.includes('°'))).toBe(true)
   })
 
+  it('rounds latitude/longitude to 1 decimal for display, but keeps the raw CSV precision internally', () => {
+    // 4 décimales dans le CSV ("-61.8468") seraient une fausse précision affichées telles quelles
+    // dans un quiz de culture générale ; les calculs (distracteurs, tolérance…) restent exacts.
+    const numeric = quiz.questions.find((q): q is Extract<typeof q, { type: 'numeric' }> =>
+      q.type === 'numeric' && q.subject === 'Antigua-et-Barbuda' && q.tags.includes('longitude_deg'))
+    expect(numeric?.content.target).toBe(-61.8468)
+    const qcm = quiz.questions.find((q): q is Extract<typeof q, { type: 'qcm' }> =>
+      q.type === 'qcm' && q.subject === 'Antigua-et-Barbuda' && q.tags.includes('longitude_deg') && !q.content.multiple)
+    expect(qcm?.content.answers.find((a) => a.isCorrect)?.label).toBe('-61,8')
+  })
+
   it('adds declared aliases to the accepted answers of a cloze', () => {
     const withAlias = generateQuiz(caribbeanRows, schema, {
       seed: 'test',

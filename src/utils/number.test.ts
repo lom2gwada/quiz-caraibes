@@ -28,4 +28,15 @@ describe('formatNumericValue', () => {
   it('laisse une année brute', () => {
     expect(formatNumericValue(1804, true)).toBe('1804')
   })
+  it('arrondit une coordonnée (°) à 1 décimale — la précision brute du CSV serait une fausse précision', () => {
+    expect(formatNumericValue(17.1274, false, undefined, '°')).toBe('17,1')
+    expect(formatNumericValue(-61.8468, false, undefined, '°')).toBe('-61,8')
+  })
+  it("n'ajoute pas de décimale pour une coordonnée déjà ronde", () => {
+    expect(formatNumericValue(-55, false, undefined, '°')).toBe('-55')
+  })
+  it("ne change rien pour une unité sans règle d'arrondi dédiée", () => {
+    expect(formatNumericValue(17.1274, false, undefined, 'km²')).toBe('17,127')
+    expect(formatNumericValue(17.1274, false)).toBe('17,127')
+  })
 })

@@ -324,7 +324,7 @@ export function generateQuiz(
             : Math.min(-step, roundTo(target * f, step))
         if (v !== target && (target >= 0 ? v > 0 : v < 0) && (!spec.isYear || v <= 2024)) out.add(v)
       }
-      return shuffle([...out]).slice(0, n).map((v) => formatNumericValue(v, spec.isYear))
+      return shuffle([...out]).slice(0, n).map((v) => formatNumericValue(v, spec.isYear, undefined, unit))
     }
 
     // ---- Colonne image (ex. drapeaux) : identifier l'entité d'après l'image ----
@@ -465,16 +465,17 @@ export function generateQuiz(
             ? T('prompt.numericYear', ctx(row))
             : T(unit ? 'prompt.estimateUnit' : 'prompt.estimate', { ...ctx(row), unit: unit ?? '' }),
           topic: T('topic.labelSubject', ctx(row)), ...subj(row),
-          explanation: T('explanation.fact', { ...ctx(row), value: `${formatNumericValue(target, spec.isYear)}${unit && !spec.isYear ? ` ${unit}` : ''}` }),
+          explanation: T('explanation.fact', { ...ctx(row), value: `${formatNumericValue(target, spec.isYear, undefined, unit)}${unit && !spec.isYear ? ` ${unit}` : ''}` }),
           content: { min, max, step, target, tolerance, isYear: spec.isYear, ...(unit && !spec.isYear ? { unit } : {}) },
         })
       }
     }
 
     // ---- Classement (ordering) : groupes aléatoires qui se recouvrent ----
-    // Une seule ligne par valeur distincte au départ (deux ex æquo rendraient l'ordre attendu ambigu).
+    // Une seule ligne par valeur AFFICHÉE distincte au départ (deux ex æquo, même arrondis à des
+    // valeurs brutes différentes, rendraient l'ordre attendu ambigu dans l'explication).
     if (spec.kind === 'number') {
-      const distinct = [...new Map(shuffle(numRowsWith).map((r) => [asNumber(r[col]), r] as const)).values()]
+      const distinct = [...new Map(shuffle(numRowsWith).map((r) => [formatNumericValue(asNumber(r[col]), spec.isYear, undefined, unit), r] as const)).values()]
       const direction: 'asc' | 'desc' = spec.isYear ? 'asc' : 'desc'
       const idOf = (r: Row): string => `o-${hashStr(nameOf(r) + col)}`
       for (const group of overlapGroups(distinct, CFG.order.groupSize)) {
@@ -487,7 +488,7 @@ export function generateQuiz(
           question: T('prompt.ordering', { nouns, label, direction: grammar.direction(direction) }),
           topic: T('topic.labelList', { Label, list: members.join(', ') }),
           explanation: sorted
-            .map((r) => `${displayName(r)} (${formatNumericValue(asNumber(r[col]), spec.isYear)}${unit && !spec.isYear ? ` ${unit}` : ''})`)
+            .map((r) => `${displayName(r)} (${formatNumericValue(asNumber(r[col]), spec.isYear, undefined, unit)}${unit && !spec.isYear ? ` ${unit}` : ''})`)
             .join(' › '),
           content: {
             items: shuffle(group).map<OrderingItem>((r) => ({ id: idOf(r), label: displayName(r) })),
@@ -501,7 +502,7 @@ export function generateQuiz(
     if (spec.kind === 'number') {
       for (const row of numRowsWith) {
         const target = asNumber(row[col])
-        const shown = formatNumericValue(target, spec.isYear)
+        const shown = formatNumericValue(target, spec.isYear, undefined, unit)
         const unitSuffix = unit && !spec.isYear ? ` ${unit}` : ''
         const about = T('topic.labelSubject', ctx(row))
         const fact = T('explanation.fact', { ...ctx(row), value: `${shown}${unitSuffix}` })
@@ -551,7 +552,7 @@ export function generateQuiz(
     // ---- QCM inversé sur un nombre (colonnes uniques : une seule bonne réponse possible) ----
     if (spec.kind === 'number' && spec.unique && rows.length > CFG.qcmBackward.choices) {
       for (const row of numRowsWith) {
-        const shown = `${formatNumericValue(asNumber(row[col]), spec.isYear)}${unit && !spec.isYear ? ` ${unit}` : ''}`
+        const shown = `${formatNumericValue(asNumber(row[col]), spec.isYear, undefined, unit)}${unit && !spec.isYear ? ` ${unit}` : ''}`
         const correct = displayName(row)
         const distractors = sample(rows.filter((r) => r !== row).map(displayName), CFG.qcmBackward.choices - 1)
         questions.push({
@@ -567,12 +568,13 @@ export function generateQuiz(
       }
     }
 
-    // ---- Association sur un nombre : groupes recouvrants, une ligne par valeur distincte ----
+    // ---- Association sur un nombre : groupes recouvrants, une ligne par valeur AFFICHÉE distincte
+    // (deux options identiques une fois arrondies seraient indiscernables à associer) ----
     if (spec.kind === 'number') {
-      const distinct = [...new Map(shuffle(numRowsWith).map((r) => [asNumber(r[col]), r] as const)).values()]
+      const distinct = [...new Map(shuffle(numRowsWith).map((r) => [formatNumericValue(asNumber(r[col]), spec.isYear, undefined, unit), r] as const)).values()]
       const leftId = (r: Row): string => `l-${hashStr(nameOf(r) + '#' + col)}`
       const rightId = (r: Row): string => `r-${hashStr(String(asNumber(r[col])) + col)}`
-      const valOf = (r: Row): string => `${formatNumericValue(asNumber(r[col]), spec.isYear)}${unit && !spec.isYear ? ` ${unit}` : ''}`
+      const valOf = (r: Row): string => `${formatNumericValue(asNumber(r[col]), spec.isYear, undefined, unit)}${unit && !spec.isYear ? ` ${unit}` : ''}`
       for (const group of overlapGroups(distinct, CFG.matching.groupSize)) {
         const idMembers = [...group].map(nameOf).sort()
         const members = [...group].map(displayName).sort((a, b) => a.localeCompare(b, locale))
