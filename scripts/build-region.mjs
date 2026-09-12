@@ -14,7 +14,7 @@ const MIN_RING_FRAC = 0.01
 const MAX_RINGS = 10
 // Sous ce seuil (aire projetée, unités de viewBox²), la forme simplifiée devient illisible à
 // cette échelle régionale : on n'affiche qu'un point d'accent (voir RegionMap.tsx).
-const DOT_ONLY_AREA = 4
+const DOT_ONLY_AREA = 90
 
 const ringArea = r => {
   let a = 0
