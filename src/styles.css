@@ -183,6 +183,7 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .region-capital-above { transform: translate(-50%, calc(-100% - 5px)); }
 .region-overview-map { position: relative; margin-top: 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: var(--shadow); overflow: hidden; }
 .region-overview-map svg { display: block; width: 100%; height: auto; cursor: crosshair; color: var(--accent); }
+.region-overview-map svg.is-clickable { cursor: pointer; }
 .region-overview-coords { position: absolute; top: .8rem; left: .8rem; z-index: 1; padding: .3rem .6rem; background: var(--surface-solid); border: 1px solid var(--border); border-radius: .4rem; font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text-soft); pointer-events: none; }
 .region-overview-dot { fill: var(--text-muted); transition: fill .1s ease, r .1s ease; }
 .region-overview-dot { r: 1.4px; }

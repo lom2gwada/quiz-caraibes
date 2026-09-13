@@ -18,6 +18,8 @@ interface RegionOverviewPageProps {
   longitudeColumn?: string
   i18n?: DataI18n
   onBack: () => void
+  /** Ouvre la fiche du territoire survolé au clic. Reçoit la valeur FR canonique. */
+  onOpenFiche?: (name: string) => void
 }
 
 interface CapitalPoint {
@@ -37,7 +39,7 @@ const SNAP_DISTANCE_SQ = 9
  * affiche le nom du territoire et de sa capitale ; le curseur donne ses coordonnées géographiques
  * en continu. Les points sont placés sur les coordonnées réelles de la capitale (pas le centroïde
  * du territoire, moins précis, utilisé par la petite carte des fiches). */
-export function RegionOverviewPage({ rows, schema, region, regionViewBox, capitalColumn, latitudeColumn, longitudeColumn, i18n, onBack }: RegionOverviewPageProps) {
+export function RegionOverviewPage({ rows, schema, region, regionViewBox, capitalColumn, latitudeColumn, longitudeColumn, i18n, onBack, onOpenFiche }: RegionOverviewPageProps) {
   const t = useT()
   const locale = useLocale()
   const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
@@ -82,6 +84,7 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
   }
 
   const handleLeave = () => { setHoverId(null); setCoords(null) }
+  const handleClick = () => { if (hoverId) onOpenFiche?.(hoverId) }
   const hoverPoint = points.find((p) => p.canonical === hoverId)
   const capitalAbove = hoverPoint ? (hoverPoint.y / vh) > 0.62 : false
   // Ancre de l'étiquette décalée vers l'intérieur près des bords (le point, lui, reste exact) :
@@ -104,6 +107,8 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
           viewBox={regionViewBox}
           onMouseMove={handleMove}
           onMouseLeave={handleLeave}
+          onClick={handleClick}
+          className={onOpenFiche && hoverId ? 'is-clickable' : undefined}
           role="img"
           aria-label={t('regionOverview.title')}
         >

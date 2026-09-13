@@ -17,11 +17,13 @@ interface AtlasPageProps {
   onBack: () => void
   /** Ouvre la fiche d'une entité en modale (clic sur une carte). Reçoit la valeur FR canonique. */
   onOpenFiche: (name: string) => void
+  /** Absent si le jeu de données n'a pas de carte régionale (ex. import CSV personnalisé). */
+  onOpenMap?: () => void
 }
 
 /** Grille de fiches, une par entité, dans l'ordre du tri choisi. Filtre + tri génériques
  * depuis le schéma. Cliquer une carte ouvre la fiche en modale. */
-export function AtlasPage({ rows, schema, shapes, region, regionViewBox, capitalColumn, i18n, onBack, onOpenFiche }: AtlasPageProps) {
+export function AtlasPage({ rows, schema, shapes, region, regionViewBox, capitalColumn, i18n, onBack, onOpenFiche, onOpenMap }: AtlasPageProps) {
   const t = useT()
   const locale = useLocale()
   const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
@@ -72,7 +74,10 @@ export function AtlasPage({ rows, schema, shapes, region, regionViewBox, capital
     <section className="atlas-page">
       <div className="stats-header">
         <h2>{t('atlas.title')}</h2>
-        <button type="button" className="secondary" onClick={onBack}>{t('common.back')}</button>
+        <div className="header-actions">
+          {onOpenMap && <button type="button" className="secondary" onClick={onOpenMap}>🧭 {t('nav.map')}</button>}
+          <button type="button" className="secondary" onClick={onBack}>{t('common.back')}</button>
+        </div>
       </div>
       <div className="atlas-controls">
         <input
