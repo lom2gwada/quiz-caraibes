@@ -16,6 +16,8 @@ export const en: Record<MessageKey, string> = {
   'nav.quiz': 'Quiz',
   'nav.history': 'History',
 
+  'footer.version': 'Version {hash}',
+
   'start.questionCount': 'Number of questions',
   'start.count.one': '{n} question',
   'start.count.other': '{n} questions',

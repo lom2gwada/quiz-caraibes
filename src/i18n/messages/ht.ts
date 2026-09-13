@@ -18,6 +18,8 @@ export const ht: Record<MessageKey, string> = {
   'nav.quiz': 'Quiz',
   'nav.history': 'Istorik',
 
+  'footer.version': 'Vèsyon {hash}',
+
   'start.questionCount': 'Kantite kesyon',
   'start.count.one': '{n} kesyon',
   'start.count.other': '{n} kesyon',

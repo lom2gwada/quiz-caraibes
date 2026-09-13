@@ -31,6 +31,7 @@ button:hover:not(:disabled) { filter: brightness(1.08); } button:active:not(:dis
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .app-shell { width: min(900px, calc(100% - 2rem)); margin: 0 auto; padding: 3.5rem 0 5rem; }
+.app-footer { margin-top: 2.5rem; text-align: center; font-size: .7rem; color: var(--text-muted); opacity: .6; }
 .chart-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; color: var(--map-ink, #74e9d7); opacity: .2; }
 :root[data-theme="carte"] .chart-bg { opacity: .14; }
 .chart-bg svg { display: block; width: 100%; height: 100%; }

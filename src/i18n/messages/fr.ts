@@ -18,6 +18,9 @@ export const fr = {
   'nav.quiz': 'Quiz',
   'nav.history': 'Historique',
 
+  // — pied de page —
+  'footer.version': 'Version {hash}',
+
   // — accueil —
   'start.questionCount': 'Nombre de questions',
   'start.count.one': '{n} question',
