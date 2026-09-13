@@ -120,7 +120,7 @@ const values: DataI18n['values'] = {
   protestantisme: { en: 'Protestantism', es: 'protestantismo', nl: 'protestantisme', ht: 'Pwotestantis' },
   catholicisme: { en: 'Catholicism', es: 'catolicismo', nl: 'katholicisme', ht: 'Katolisis' },
   'protestantisme évangélique': { en: 'evangelical Protestantism', es: 'protestantismo evangélico', nl: 'evangelisch protestantisme', ht: 'Pwotestantis Evanjelik' },
-  'sans religion ou autre': { en: 'no religion or other', es: 'sin religión u otra', nl: 'geen religie of anders', ht: 'san relijyon oswa lòt' },
+  'sans religion ou autre': { en: 'No religion or other', es: 'sin religión u otra', nl: 'geen religie of anders', ht: 'San relijyon oswa lòt' },
   rastafari: { en: 'Rastafari', ht: 'Rastafari' },
   vaudou: { en: 'Vodou', es: 'vudú', nl: 'voodoo', ht: 'Vodou' },
   hindouisme: { en: 'Hinduism', es: 'hinduismo', nl: 'hindoeïsme', ht: 'Endouyis' },
