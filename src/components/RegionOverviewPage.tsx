@@ -63,15 +63,20 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
     })
   }, [rows, subjectColumn, latitudeColumn, longitudeColumn, capitalColumn, data])
 
-  const handleMove = (event: ReactMouseEvent<SVGSVGElement>) => {
+  // Position SVG d'un événement souris OU tactile (un tap déclenche aussi onClick) — factorisé
+  // car le clic doit retrouver le point le plus proche par lui-même, sans dépendre d'un survol
+  // préalable : sur tactile, il n'y a pas toujours de mousemove avant le tap.
+  const toSvgPoint = (event: ReactMouseEvent<SVGSVGElement>): DOMPoint | null => {
     const svg = svgRef.current
     const ctm = svg?.getScreenCTM()
-    if (!svg || !ctm) return
+    if (!svg || !ctm) return null
     const pt = svg.createSVGPoint()
     pt.x = event.clientX
     pt.y = event.clientY
-    const loc = pt.matrixTransform(ctm.inverse())
-    setCoords(viewToLonLat(loc.x, loc.y))
+    return pt.matrixTransform(ctm.inverse())
+  }
+
+  const nearestAt = (loc: DOMPoint): string | null => {
     let nearest: string | null = null
     let best = SNAP_DISTANCE_SQ
     for (const p of points) {
@@ -80,11 +85,24 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
       const dist2 = dx * dx + dy * dy
       if (dist2 < best) { best = dist2; nearest = p.canonical }
     }
-    setHoverId(nearest)
+    return nearest
+  }
+
+  const handleMove = (event: ReactMouseEvent<SVGSVGElement>) => {
+    const loc = toSvgPoint(event)
+    if (!loc) return
+    setCoords(viewToLonLat(loc.x, loc.y))
+    setHoverId(nearestAt(loc))
   }
 
   const handleLeave = () => { setHoverId(null); setCoords(null) }
-  const handleClick = () => { if (hoverId) onOpenFiche?.(hoverId) }
+
+  const handleClick = (event: ReactMouseEvent<SVGSVGElement>) => {
+    const loc = toSvgPoint(event)
+    if (!loc) return
+    const id = nearestAt(loc)
+    if (id) onOpenFiche?.(id)
+  }
   const hoverPoint = points.find((p) => p.canonical === hoverId)
   const capitalAbove = hoverPoint ? (hoverPoint.y / vh) > 0.62 : false
   // Ancre de l'étiquette décalée vers l'intérieur près des bords (le point, lui, reste exact) :
