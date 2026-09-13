@@ -15,6 +15,7 @@ export const ht: Record<MessageKey, string> = {
   'header.soundOff': 'Koupe son an',
   'nav.profile': 'Pwofil',
   'nav.fiches': 'Fich',
+  'nav.map': 'Kat',
   'nav.quiz': 'Quiz',
   'nav.history': 'Istorik',
 
@@ -164,6 +165,10 @@ export const ht: Record<MessageKey, string> = {
   'atlas.sortAsc': 'Lòd k ap monte, klike pou desann',
   'atlas.sortDesc': 'Lòd k ap desann, klike pou monte',
   'atlas.empty': 'Pa gen fich pou "{query}".',
+
+  'regionOverview.title': 'Kat',
+  'regionOverview.hint': 'Pase sou yon pwen pou wè teritwa a ak kapital li — kowòdone yo swiv kisè a.',
+  'regionOverview.coordsHint': 'Pase sou kat la…',
   'fiche.silhouetteLabel': 'Kontou: {name} (pase sourit la pou agrandi)',
   'fiche.flagLabel': 'Imaj {name} — pase sourit la pou agrandi, klike pou ouvri',
   'fiche.regionLabel': 'Pozisyon nan Karayib la: {name} (pase sourit la pou agrandi)',

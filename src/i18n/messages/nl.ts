@@ -14,6 +14,7 @@ export const nl: Record<MessageKey, string> = {
   'header.soundOff': 'Geluid uit',
   'nav.profile': 'Profiel',
   'nav.fiches': 'Kaarten',
+  'nav.map': 'Kaart',
   'nav.quiz': 'Quiz',
   'nav.history': 'Geschiedenis',
 
@@ -163,6 +164,10 @@ export const nl: Record<MessageKey, string> = {
   'atlas.sortAsc': 'Oplopend, klik voor aflopend',
   'atlas.sortDesc': 'Aflopend, klik voor oplopend',
   'atlas.empty': 'Geen kaart voor "{query}".',
+
+  'regionOverview.title': 'Kaart',
+  'regionOverview.hint': 'Beweeg over een punt om het gebied en zijn hoofdstad te zien — de coördinaten volgen de cursor.',
+  'regionOverview.coordsHint': 'Beweeg over de kaart…',
   'fiche.silhouetteLabel': 'Omtrek: {name} (beweeg de muis om te vergroten)',
   'fiche.flagLabel': 'Afbeelding van {name} — beweeg de muis om te vergroten, klik om te openen',
   'fiche.regionLabel': 'Ligging in het Caribisch gebied: {name} (beweeg de muis om te vergroten)',

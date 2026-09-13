@@ -13,6 +13,7 @@ export const en: Record<MessageKey, string> = {
   'header.soundOff': 'Turn sound off',
   'nav.profile': 'Profile',
   'nav.fiches': 'Cards',
+  'nav.map': 'Map',
   'nav.quiz': 'Quiz',
   'nav.history': 'History',
 
@@ -162,6 +163,10 @@ export const en: Record<MessageKey, string> = {
   'atlas.sortAsc': 'Ascending order, click for descending',
   'atlas.sortDesc': 'Descending order, click for ascending',
   'atlas.empty': 'No card for "{query}".',
+
+  'regionOverview.title': 'Map',
+  'regionOverview.hint': 'Hover a point to see the territory and its capital — the coordinates follow the cursor.',
+  'regionOverview.coordsHint': 'Hover the map…',
   'fiche.silhouetteLabel': 'Outline: {name} (hover to enlarge)',
   'fiche.flagLabel': 'Image of {name} — hover to enlarge, click to open',
   'fiche.regionLabel': 'Position in the Caribbean: {name} (hover to enlarge)',

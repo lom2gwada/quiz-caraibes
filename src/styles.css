@@ -181,6 +181,13 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .region-capital { position: absolute; transform: translateX(-50%); font-size: .6rem; font-weight: 600; color: var(--ink); text-shadow: 0 1px 3px var(--surface-solid), 0 1px 3px var(--surface-solid); white-space: nowrap; pointer-events: none; }
 .region-capital-below { margin-top: 5px; }
 .region-capital-above { transform: translate(-50%, calc(-100% - 5px)); }
+.region-overview-map { position: relative; margin-top: 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: var(--shadow); overflow: hidden; }
+.region-overview-map svg { display: block; width: 100%; height: auto; cursor: crosshair; color: var(--accent); }
+.region-overview-coords { position: absolute; top: .8rem; left: .8rem; z-index: 1; padding: .3rem .6rem; background: var(--surface-solid); border: 1px solid var(--border); border-radius: .4rem; font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text-soft); pointer-events: none; }
+.region-overview-dot { fill: var(--text-muted); transition: fill .1s ease, r .1s ease; }
+.region-overview-dot { r: 1.4px; }
+.region-overview-dot.is-active { fill: var(--accent); r: 2.6px; }
+.region-overview-title { position: absolute; transform: translate(-50%, calc(-100% - 8px)); font-size: .95rem; font-weight: 800; color: var(--ink); text-shadow: 0 1px 4px var(--surface-solid), 0 1px 4px var(--surface-solid); white-space: nowrap; pointer-events: none; }
 .fiche-facts { margin: 0; display: grid; gap: .45rem; }
 .fiche-fact { display: grid; grid-template-columns: 42% 1fr; gap: .1rem .6rem; align-items: baseline; }
 .fiche-fact dt { margin: 0; color: var(--text-muted); font-size: .78rem; }

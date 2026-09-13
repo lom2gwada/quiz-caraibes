@@ -15,6 +15,7 @@ export const fr = {
   'header.soundOff': 'Couper le son',
   'nav.profile': 'Profil',
   'nav.fiches': 'Fiches',
+  'nav.map': 'Carte',
   'nav.quiz': 'Quiz',
   'nav.history': 'Historique',
 
@@ -176,6 +177,11 @@ export const fr = {
   'atlas.sortAsc': 'Ordre croissant, cliquer pour décroissant',
   'atlas.sortDesc': 'Ordre décroissant, cliquer pour croissant',
   'atlas.empty': 'Aucune fiche pour « {query} ».',
+
+  // — carte régionale (vue d'ensemble) —
+  'regionOverview.title': 'Carte',
+  'regionOverview.hint': 'Survolez un point pour voir le territoire et sa capitale ; les coordonnées suivent le curseur.',
+  'regionOverview.coordsHint': 'Survolez la carte…',
   'fiche.silhouetteLabel': 'Silhouette : {name} (survoler pour agrandir)',
   'fiche.flagLabel': 'Image de {name} — survoler pour agrandir, cliquer pour ouvrir',
   'fiche.regionLabel': 'Position dans les Caraïbes : {name} (survoler pour agrandir)',

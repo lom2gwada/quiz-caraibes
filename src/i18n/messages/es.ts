@@ -14,6 +14,7 @@ export const es: Record<MessageKey, string> = {
   'header.soundOff': 'Silenciar',
   'nav.profile': 'Perfil',
   'nav.fiches': 'Fichas',
+  'nav.map': 'Mapa',
   'nav.quiz': 'Quiz',
   'nav.history': 'Historial',
 
@@ -163,6 +164,10 @@ export const es: Record<MessageKey, string> = {
   'atlas.sortAsc': 'Orden ascendente, clic para descendente',
   'atlas.sortDesc': 'Orden descendente, clic para ascendente',
   'atlas.empty': 'Ninguna ficha para «{query}».',
+
+  'regionOverview.title': 'Mapa',
+  'regionOverview.hint': 'Pasa el cursor por un punto para ver el territorio y su capital — las coordenadas siguen el cursor.',
+  'regionOverview.coordsHint': 'Pasa el cursor por el mapa…',
   'fiche.silhouetteLabel': 'Silueta: {name} (pasa el ratón para ampliar)',
   'fiche.flagLabel': 'Imagen de {name} — pasa el ratón para ampliar, haz clic para abrir',
   'fiche.regionLabel': 'Posición en el Caribe: {name} (pasa el ratón para ampliar)',

@@ -9,6 +9,7 @@ import { FilterPanel } from './components/FilterPanel'
 import { HistoryPage } from './components/HistoryPage'
 import { ProfilePage } from './components/ProfilePage'
 import { AtlasPage } from './components/AtlasPage'
+import { RegionOverviewPage } from './components/RegionOverviewPage'
 import { FicheModal } from './components/FicheModal'
 import { QuizContentPage } from './components/QuizContentPage'
 import { QuizPage, type GameMode } from './components/QuizPage'
@@ -28,7 +29,7 @@ import type { GenSchema, Row } from './utils/quizGenerator'
 import { isSoundMuted, playClick, setSoundMuted } from './utils/sound'
 import { shuffle } from './utils/shuffle'
 
-type View = 'start' | 'quiz' | 'results' | 'content' | 'history' | 'profile' | 'atlas'
+type View = 'start' | 'quiz' | 'results' | 'content' | 'history' | 'profile' | 'atlas' | 'map'
 type Dataset = {
   rows: Row[]
   schema: GenSchema
@@ -38,6 +39,10 @@ type Dataset = {
   regionViewBox?: string
   /** Colonne « capitale », pour l'étiquette sur la carte de positionnement agrandie. */
   capitalColumn?: string
+  /** Colonnes latitude/longitude (degrés décimaux) de la capitale, pour la placer précisément
+   * sur la grande carte interactive (vue d'ensemble). */
+  latitudeColumn?: string
+  longitudeColumn?: string
   i18n?: DataI18n
   /** Nom d'un élément par locale (le CSV n'a pas cette info) ; défaut = `schema.noun`. */
   nouns?: Partial<Record<Locale, string>>
@@ -91,6 +96,8 @@ const initialDataset: Dataset | null = bundledRows.length
       region: caribbeanRegion,
       regionViewBox: REGION_VIEWBOX,
       capitalColumn: 'capitale',
+      latitudeColumn: 'latitude_deg',
+      longitudeColumn: 'longitude_deg',
       i18n: caribbeanI18n,
       nouns: { fr: 'territoire', en: 'territory', es: 'territorio', nl: 'gebied', ht: 'teritwa' },
       titles: {
@@ -271,7 +278,7 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
 
   return <main className="app-shell">
     <ChartBackground />
-    <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>{t('header.by', { author: quiz.metadata.author })}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? t('header.soundOn') : t('header.soundOff')}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : `👤 ${t('nav.profile')}`}</button>}{view === 'start' && dataset && <button type="button" className="secondary" onClick={() => navigate('atlas')}>🗺️ {t('nav.fiches')}</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ {t('nav.quiz')}</button>}</div></header>
+    <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>{t('header.by', { author: quiz.metadata.author })}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? t('header.soundOn') : t('header.soundOff')}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : `👤 ${t('nav.profile')}`}</button>}{view === 'start' && dataset && <button type="button" className="secondary" onClick={() => navigate('atlas')}>🗺️ {t('nav.fiches')}</button>}{view === 'start' && dataset?.region && <button type="button" className="secondary" onClick={() => navigate('map')}>🧭 {t('nav.map')}</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ {t('nav.quiz')}</button>}</div></header>
     {view === 'start' && <section className="start-page">
       <FilterPanel categories={quiz.categories} selectedCategories={selectedCategories} difficulty={difficulty} onCategoryToggle={toggleCategory} onDifficultyChange={setDifficulty} />
       <div className="mode-toggle" role="radiogroup" aria-label={t('start.mode.aria')}>
@@ -308,6 +315,7 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
     {view === 'results' && <ResultPage questions={resultQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? setFicheSubject : undefined} />}
     {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
     {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} i18n={dataset.i18n} onOpenFiche={setFicheSubject} onBack={() => navigate('start')} />}
+    {view === 'map' && dataset?.region && dataset.regionViewBox && <RegionOverviewPage rows={dataset.rows} schema={dataset.schema} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} latitudeColumn={dataset.latitudeColumn} longitudeColumn={dataset.longitudeColumn} i18n={dataset.i18n} onBack={() => navigate('start')} />}
     {ficheSubject && dataset && (() => {
       const row = dataset.rows.find((r) => r[dataset.schema.subjectColumn] === ficheSubject)
       return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} i18n={dataset.i18n} onClose={() => setFicheSubject(null)} /> : null
