@@ -183,6 +183,21 @@ describe('generateQuiz', () => {
     expect(new Set(booleans.map((q) => (q.content as { isTrue: boolean }).isTrue)).size).toBe(2)
   })
 
+  it('phrases a vrai/faux on a multivalue column as membership, not equivalence', () => {
+    // « Langues d'Haïti : français. » laisserait croire que le français est la seule langue —
+    // Haïti en a deux (français|créole haïtien) : on teste plutôt l'appartenance à l'ensemble.
+    const langueBooleans = quiz.questions.filter((q) => q.type === 'boolean' && q.tags.includes('langues') && q.subject === 'Haïti')
+    expect(langueBooleans.length).toBeGreaterThan(0)
+    // La valeur testée peut être une vraie langue d'Haïti (isTrue) ou empruntée à un autre
+    // territoire pour le cas Faux — seule la formulation générique nous intéresse ici.
+    for (const q of langueBooleans) {
+      expect(q.question).toMatch(/^[A-ZÉÈÀ].+ fait partie des langues d'Haïti\.$/)
+    }
+    // Une colonne à valeur unique (capitale) garde l'ancienne formulation par équivalence.
+    const capitaleBoolean = quiz.questions.find((q) => q.type === 'boolean' && q.tags.includes('capitale'))
+    expect(capitaleBoolean?.question).toMatch(/^Capitale de .+ : .+\.$/)
+  })
+
   it('numeric columns feed every question type, not just estimation and ordering', () => {
     const byCol = (c: string) => quiz.questions.filter((q) => q.tags.includes(c))
     const types = (c: string) => new Set(byCol(c).map((q) => q.type))

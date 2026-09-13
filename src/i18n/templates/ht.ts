@@ -8,6 +8,7 @@ export const ht: Record<TemplateKey, string> = {
   'prompt.qcmMulti': '{Label} {ofSubject}? (plizyè repons)',
   'prompt.inverse': 'Ki {noun} ki gen {label} «{value}»?',
   'prompt.boolean': '{Label} {ofSubject}: {value}.',
+  'prompt.booleanMulti': '{Value} fè pati {label} {ofSubject}.',
   'prompt.cloze': '{Label} {ofSubject}: ___',
   'prompt.numericYear': 'Nan ki ane: {label} {ofSubject}?',
   'prompt.estimate': 'Estime: {label} {ofSubject}.',

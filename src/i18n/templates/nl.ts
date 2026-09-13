@@ -8,6 +8,7 @@ export const nl: Record<TemplateKey, string> = {
   'prompt.qcmMulti': '{Label} {ofSubject}? (meerdere antwoorden)',
   'prompt.inverse': 'Welk {noun} heeft als {label} "{value}"?',
   'prompt.boolean': '{Label} {ofSubject}: {value}.',
+  'prompt.booleanMulti': '{Value} is een van de {label} {ofSubject}.',
   'prompt.cloze': '{Label} {ofSubject}: ___',
   'prompt.numericYear': 'In welk jaar: {label} {ofSubject}?',
   'prompt.estimate': 'Schat: {label} {ofSubject}.',

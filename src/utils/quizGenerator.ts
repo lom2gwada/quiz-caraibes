@@ -396,9 +396,14 @@ export function generateQuiz(
           ? corrects[Math.floor(rand() * corrects.length)]
           : sample(domain.filter((v) => !corrects.includes(v)), 1)[0]
         if (shown) {
+          // Colonne multivaleur (ex. religions, langues) : « {Label} … : {value}. » laisserait
+          // croire que {value} est la seule valeur — on teste plutôt son appartenance à l'ensemble.
+          const question = spec.multivalueSeparator
+            ? T('prompt.booleanMulti', { ...ctx(row), Value: grammar.cap(shown) })
+            : T('prompt.boolean', { ...ctx(row), value: shown })
           questions.push({
             id: qid([col, 'boolean', nameOf(row)]), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
-            question: T('prompt.boolean', { ...ctx(row), value: shown }),
+            question,
             topic: about, ...subj(row),
             explanation: T('explanation.boolean', { verdict: showTrue ? tpl['word.true'] : tpl['word.false'], fact }),
             content: { isTrue: showTrue },

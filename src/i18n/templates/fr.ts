@@ -12,6 +12,9 @@ export const fr = {
   'prompt.qcmMulti': '{Label} {ofSubject} ? (plusieurs réponses)',
   'prompt.inverse': 'Quel {noun} a pour {label} « {value} » ?',
   'prompt.boolean': '{Label} {ofSubject} : {value}.',
+  // Colonne multivaleur (ex. religions, langues) : « {Label} … : {value}. » laisserait croire que
+  // {value} est la SEULE valeur — on teste plutôt l'appartenance à l'ensemble des valeurs.
+  'prompt.booleanMulti': '{Value} fait partie des {label} {ofSubject}.',
   'prompt.cloze': '{Label} {ofSubject} : ___',
   'prompt.numericYear': 'En quelle année : {label} {ofSubject} ?',
   'prompt.estimate': 'Estimez : {label} {ofSubject}.',
