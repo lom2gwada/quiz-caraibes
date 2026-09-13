@@ -8,7 +8,9 @@ export const es: Record<TemplateKey, string> = {
   'prompt.qcmMulti': '¿{Label} {ofSubject}? (varias respuestas)',
   'prompt.inverse': '¿Qué {noun} tiene como {label} «{value}»?',
   'prompt.boolean': '{Label} {ofSubject}: {value}.',
-  'prompt.booleanMulti': '{Value} forma parte de las {label} {ofSubject}.',
+  // Sans article : « las/los {label} » demanderait d'accorder en genre (« los idiomas » mais
+  // « las religiones »), que le gabarit ne peut pas connaître pour une colonne quelconque.
+  'prompt.booleanMulti': '{Value} forma parte de {label} {ofSubject}.',
   'prompt.cloze': '{Label} {ofSubject}: ___',
   'prompt.numericYear': '¿En qué año: {label} {ofSubject}?',
   'prompt.estimate': 'Estima: {label} {ofSubject}.',
