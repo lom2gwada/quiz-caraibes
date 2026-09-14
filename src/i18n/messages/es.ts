@@ -131,6 +131,15 @@ export const es: Record<MessageKey, string> = {
   'profile.saveError': 'No se pudo guardar el perfil. Inténtalo de nuevo.',
   'profile.saved': 'Perfil guardado ✓',
 
+  // — inicio de sesión (sincroniza el perfil con Oliver Quiz) —
+  'auth.hint': 'Inicia sesión con tu cuenta de Oliver Quiz para sincronizar tu perfil entre dispositivos.',
+  'auth.email': 'Correo electrónico',
+  'auth.password': 'Contraseña',
+  'auth.signIn': 'Iniciar sesión',
+  'auth.error': 'Correo o contraseña incorrectos.',
+  'auth.signOut': 'Cerrar sesión',
+  'auth.connectedAs': 'Conectado como {email}',
+
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Regenerar las preguntas',
   'content.importCsv': 'Importar un CSV',

@@ -141,6 +141,15 @@ export const fr = {
   'profile.saveError': "Impossible d'enregistrer le profil. Réessayez.",
   'profile.saved': 'Profil enregistré ✓',
 
+  // — connexion (synchronisation du profil avec Oliver Quiz) —
+  'auth.hint': 'Connecte-toi avec ton compte Oliver Quiz pour synchroniser ton profil sur tous tes appareils.',
+  'auth.email': 'Email',
+  'auth.password': 'Mot de passe',
+  'auth.signIn': 'Se connecter',
+  'auth.error': 'Email ou mot de passe incorrect.',
+  'auth.signOut': 'Se déconnecter',
+  'auth.connectedAs': 'Connecté en tant que {email}',
+
   // — page « ⚙️ Quiz » (contenu / génération) —
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Régénérer les questions',

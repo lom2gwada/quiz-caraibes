@@ -130,6 +130,15 @@ export const en: Record<MessageKey, string> = {
   'profile.saveError': 'Could not save the profile. Please try again.',
   'profile.saved': 'Profile saved ✓',
 
+  // — sign-in (syncs the profile with Oliver Quiz) —
+  'auth.hint': 'Sign in with your Oliver Quiz account to sync your profile across devices.',
+  'auth.email': 'Email',
+  'auth.password': 'Password',
+  'auth.signIn': 'Sign in',
+  'auth.error': 'Incorrect email or password.',
+  'auth.signOut': 'Sign out',
+  'auth.connectedAs': 'Signed in as {email}',
+
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Regenerate the questions',
   'content.importCsv': 'Import a CSV',

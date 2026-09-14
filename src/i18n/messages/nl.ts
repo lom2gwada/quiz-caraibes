@@ -131,6 +131,15 @@ export const nl: Record<MessageKey, string> = {
   'profile.saveError': 'Kon het profiel niet opslaan. Probeer opnieuw.',
   'profile.saved': 'Profiel opgeslagen ✓',
 
+  // — inloggen (synchroniseert het profiel met Oliver Quiz) —
+  'auth.hint': 'Log in met je Oliver Quiz-account om je profiel te synchroniseren tussen apparaten.',
+  'auth.email': 'E-mail',
+  'auth.password': 'Wachtwoord',
+  'auth.signIn': 'Inloggen',
+  'auth.error': 'Onjuiste e-mail of wachtwoord.',
+  'auth.signOut': 'Uitloggen',
+  'auth.connectedAs': 'Ingelogd als {email}',
+
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Vragen opnieuw genereren',
   'content.importCsv': 'Een CSV importeren',

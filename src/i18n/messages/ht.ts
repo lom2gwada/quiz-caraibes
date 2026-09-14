@@ -132,6 +132,15 @@ export const ht: Record<MessageKey, string> = {
   'profile.saveError': 'Pa ka anrejistre pwofil la. Eseye ankò.',
   'profile.saved': 'Pwofil anrejistre ✓',
 
+  // — konesyon (senkronize pwofil la ak Oliver Quiz) —
+  'auth.hint': 'Konekte ak kont Oliver Quiz ou pou senkronize pwofil ou sou tout aparèy ou.',
+  'auth.email': 'Imèl',
+  'auth.password': 'Modpas',
+  'auth.signIn': 'Konekte',
+  'auth.error': 'Imèl oswa modpas pa kòrèk.',
+  'auth.signOut': 'Dekonekte',
+  'auth.connectedAs': 'Konekte kòm {email}',
+
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Rejenere kesyon yo',
   'content.importCsv': 'Enpòte yon CSV',

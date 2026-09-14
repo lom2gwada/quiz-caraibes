@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type { Session } from '@supabase/supabase-js'
 import caribbeanCsv from './data/caribbean.csv?raw'
 import { shapes as caribbeanShapes } from './data/shapes'
 import { aliases as caribbeanAliases } from './data/aliases'
@@ -21,6 +22,7 @@ import { applyLocale, DEFAULT_LOCALE, resolveLocale, type Locale } from './i18n/
 import type { DataI18n } from './i18n/data'
 import { buildQuestionResultPayloads, buildQuizResultPayload, saveQuestionResults, saveQuizResult } from './utils/quizHistory'
 import { fetchProfile, saveProfile } from './utils/profile'
+import { useAuth } from './hooks/useAuth'
 import { applyTheme } from './utils/theme'
 import { parseQuiz } from './utils/quizValidation'
 import { formatNumber } from './utils/number'
@@ -116,18 +118,20 @@ function pickRandomQuestions<T>(questions: T[], count: number): T[] {
 }
 
 export default function App() {
+  const auth = useAuth()
+  const userId = auth.session?.user.id ?? null
   const [profile, setProfile] = useState<Profile | null>(null)
-  useEffect(() => { fetchProfile().then(setProfile).catch(() => {}) }, [])
+  useEffect(() => { fetchProfile(userId).then(setProfile).catch(() => {}) }, [userId])
   const locale = resolveLocale(profile?.locale)
   useEffect(() => { applyLocale(locale) }, [locale])
   return (
     <LocaleProvider locale={locale}>
-      <AppInner profile={profile} onProfileChange={setProfile} />
+      <AppInner profile={profile} onProfileChange={setProfile} session={auth.session} />
     </LocaleProvider>
   )
 }
 
-function AppInner({ profile, onProfileChange }: { profile: Profile | null; onProfileChange: (p: Profile) => void }) {
+function AppInner({ profile, onProfileChange, session }: { profile: Profile | null; onProfileChange: (p: Profile) => void; session: Session | null }) {
   const t = useT()
   const locale = useLocale()
   const tRef = useRef(t)
@@ -321,7 +325,7 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
       return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} i18n={dataset.i18n} onClose={() => setFicheSubject(null)} /> : null
     })()}
     {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} historyKey={historyKeyOf(dataset, quiz)} onReplayMissed={replayMissed} />}
-    {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); onProfileChange(next) }} onViewHistory={() => viewHistory('profile')} />}
+    {view === 'profile' && <ProfilePage profile={profile} session={session} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next, session?.user.id); onProfileChange(next) }} onViewHistory={() => viewHistory('profile')} />}
     <footer className="app-footer">{t('footer.version', { hash: __COMMIT_HASH__ })}</footer>
   </main>
 }

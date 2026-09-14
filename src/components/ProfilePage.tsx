@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
+import type { Session } from '@supabase/supabase-js'
 import type { Profile, Theme } from '../types/profile'
 import type { Locale } from '../i18n/locale'
 import { LOCALE_LABELS, SUPPORTED_LOCALES, resolveLocale } from '../i18n/locale'
 import { useT } from '../i18n'
 import { playClick } from '../utils/sound'
 import { applyTheme } from '../utils/theme'
+import { AuthPanel } from './AuthPanel'
 
 // Grille orientée Caraïbes / voyage, groupée par thème (une ligne visuelle ≈ un groupe) :
 // visages + faune marine · faune de terre + paysage d'île · eau + voyage/navigation + soleil.
@@ -63,12 +65,13 @@ export function resolveAvatarInput(raw: string): string {
 
 interface ProfilePageProps {
   profile: Profile | null
+  session: Session | null
   onBack: () => void
   onSave: (profile: Profile) => Promise<void>
   onViewHistory: () => void
 }
 
-export function ProfilePage({ profile, onBack, onSave, onViewHistory }: ProfilePageProps) {
+export function ProfilePage({ profile, session, onBack, onSave, onViewHistory }: ProfilePageProps) {
   const t = useT()
   const [pseudo, setPseudo] = useState(profile?.pseudo ?? '')
   const initialAvatar = profile?.avatar || AVATAR_OPTIONS[0]
@@ -115,6 +118,7 @@ export function ProfilePage({ profile, onBack, onSave, onViewHistory }: ProfileP
     <div className="nav-links">
       <button type="button" className="secondary" onClick={onViewHistory}>🕓 {t('nav.history')}</button>
     </div>
+    <AuthPanel session={session} />
     <form className="profile-form" onSubmit={submit}>
       <label>{t('profile.pseudo')}
         <input value={pseudo} onChange={(event) => { setPseudo(event.target.value); setSaved(false) }} required maxLength={30} placeholder={t('profile.pseudoPlaceholder')} />
