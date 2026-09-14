@@ -2,6 +2,7 @@ import type { AnswersByQuestion, Category, Question } from '../types/quiz'
 import type { ChartGroup, MissedQuestion, QuestionResultPayload, QuestionResultRow, QuizRecords, QuizResultPayload, QuizResultRow, StatBucket } from '../types/history'
 import { isCorrect } from '../components/ResultPage'
 import type { GameMode } from '../components/QuizPage'
+import { supabase } from './supabase'
 
 const QUIZ_KEY = 'quiz-forge:quiz-results'
 const QUESTION_KEY = 'quiz-forge:question-results'
@@ -62,11 +63,29 @@ export function buildQuizResultPayload(questions: Question[], answers: AnswersBy
   }
 }
 
-/** Best-effort : une partie non enregistrée ne doit jamais empêcher l'utilisateur de voir son résultat. */
-export async function saveQuizResult(payload: QuizResultPayload): Promise<void> {
+async function pushQuizRowsToCloud(userId: string, rows: QuizResultRow[]): Promise<void> {
+  if (!rows.length) return
+  const { error } = await supabase.from('quiz_forge_quiz_results').upsert(rows.map((row) => ({ ...row, user_id: userId })), { onConflict: 'id' })
+  if (error) throw error
+}
+
+async function fetchCloudQuizRows(userId: string): Promise<QuizResultRow[]> {
+  const { data, error } = await supabase
+    .from('quiz_forge_quiz_results')
+    .select('id,quiz_title,mode,score,earned_points,total_points,correct_count,elapsed_seconds,question_count,categories,by_category,by_type,by_difficulty,created_at')
+    .eq('user_id', userId)
+  if (error) throw error
+  return data ?? []
+}
+
+/** Best-effort : une partie non enregistrée ne doit jamais empêcher l'utilisateur de voir son résultat.
+ *  Toujours écrit en local ; poussé aussi vers le cloud si connecté (id partagé, donc rejouable sans doublon). */
+export async function saveQuizResult(payload: QuizResultPayload, userId?: string | null): Promise<void> {
+  const row: QuizResultRow = { ...payload, id: newId(), created_at: new Date().toISOString() }
   const rows = readRows<QuizResultRow>(QUIZ_KEY)
-  rows.unshift({ ...payload, id: newId(), created_at: new Date().toISOString() })
+  rows.unshift(row)
   writeRows(QUIZ_KEY, rows)
+  if (userId) await pushQuizRowsToCloud(userId, [row]).catch(() => {})
 }
 
 type LegacyQuizResultRow = QuizResultRow & { themes?: string[]; by_theme?: Record<string, StatBucket>; mode?: GameMode; correct_count?: number }
@@ -78,8 +97,23 @@ function normalizeRow(row: LegacyQuizResultRow): QuizResultRow {
   return { ...withCategories, mode: withCategories.mode ?? 'classic', correct_count: withCategories.correct_count ?? 0 }
 }
 
-export async function fetchQuizHistory(): Promise<QuizResultRow[]> {
-  return readRows<LegacyQuizResultRow>(QUIZ_KEY).map(normalizeRow).sort((a, b) => b.created_at.localeCompare(a.created_at))
+/** Historique local (par navigateur), fusionné avec le cloud si connecté : les parties déjà
+ *  jouées sur un autre appareil apparaissent ici, et celles jouées ici (hors-ligne ou avant la
+ *  première connexion) sont poussées vers le cloud — chaque appareil converge vers l'union. */
+export async function fetchQuizHistory(userId?: string | null): Promise<QuizResultRow[]> {
+  const local = readRows<LegacyQuizResultRow>(QUIZ_KEY).map(normalizeRow)
+  if (!userId) return local.sort((a, b) => b.created_at.localeCompare(a.created_at))
+  try {
+    const cloud = await fetchCloudQuizRows(userId)
+    const cloudIds = new Set(cloud.map((row) => row.id))
+    const localOnly = local.filter((row) => !cloudIds.has(row.id))
+    if (localOnly.length) await pushQuizRowsToCloud(userId, localOnly).catch(() => {})
+    const merged = [...cloud, ...localOnly]
+    writeRows(QUIZ_KEY, merged)
+    return merged.sort((a, b) => b.created_at.localeCompare(a.created_at))
+  } catch {
+    return local.sort((a, b) => b.created_at.localeCompare(a.created_at))
+  }
 }
 
 /** Une ligne par question de la partie, pour pouvoir repérer plus tard les questions ratées de façon récurrente. */
@@ -94,17 +128,47 @@ export function buildQuestionResultPayloads(questions: Question[], answers: Answ
   }))
 }
 
-/** Best-effort, comme `saveQuizResult`. */
-export async function saveQuestionResults(payloads: QuestionResultPayload[]): Promise<void> {
-  if (!payloads.length) return
-  const rows = readRows<QuestionResultRow>(QUESTION_KEY)
-  const created_at = new Date().toISOString()
-  rows.push(...payloads.map((payload) => ({ ...payload, id: newId(), created_at })))
-  writeRows(QUESTION_KEY, rows)
+async function pushQuestionRowsToCloud(userId: string, rows: QuestionResultRow[]): Promise<void> {
+  if (!rows.length) return
+  const { error } = await supabase.from('quiz_forge_question_results').upsert(rows.map((row) => ({ ...row, user_id: userId })), { onConflict: 'id' })
+  if (error) throw error
 }
 
-export async function fetchQuestionResults(): Promise<QuestionResultRow[]> {
-  return readRows<QuestionResultRow>(QUESTION_KEY)
+async function fetchCloudQuestionRows(userId: string): Promise<QuestionResultRow[]> {
+  const { data, error } = await supabase
+    .from('quiz_forge_question_results')
+    .select('id,quiz_title,question_id,question_text,correct,created_at')
+    .eq('user_id', userId)
+  if (error) throw error
+  return data ?? []
+}
+
+/** Best-effort, comme `saveQuizResult`. */
+export async function saveQuestionResults(payloads: QuestionResultPayload[], userId?: string | null): Promise<void> {
+  if (!payloads.length) return
+  const created_at = new Date().toISOString()
+  const newRows = payloads.map((payload) => ({ ...payload, id: newId(), created_at }))
+  const rows = readRows<QuestionResultRow>(QUESTION_KEY)
+  rows.push(...newRows)
+  writeRows(QUESTION_KEY, rows)
+  if (userId) await pushQuestionRowsToCloud(userId, newRows).catch(() => {})
+}
+
+/** Même logique de fusion que `fetchQuizHistory`. */
+export async function fetchQuestionResults(userId?: string | null): Promise<QuestionResultRow[]> {
+  const local = readRows<QuestionResultRow>(QUESTION_KEY)
+  if (!userId) return local
+  try {
+    const cloud = await fetchCloudQuestionRows(userId)
+    const cloudIds = new Set(cloud.map((row) => row.id))
+    const localOnly = local.filter((row) => !cloudIds.has(row.id))
+    if (localOnly.length) await pushQuestionRowsToCloud(userId, localOnly).catch(() => {})
+    const merged = [...cloud, ...localOnly]
+    writeRows(QUESTION_KEY, merged)
+    return merged
+  } catch {
+    return local
+  }
 }
 
 /** Regroupe les résultats par question pour un quiz donné, ne garde que celles ratées au moins une fois, triées de la plus problématique à la moins. */

@@ -313,8 +313,8 @@ function AppInner({ profile, onProfileChange, session }: { profile: Profile | nu
     {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} mode={activeMode} timeLimitSeconds={activeTimeLimit} onFinish={(nextAnswers, duration, shown) => {
       setAnswers(nextAnswers); setResultQuestions(shown); setElapsedSeconds(duration); replace('results')
       const historyKey = historyKeyOf(dataset, quiz)
-      saveQuizResult(buildQuizResultPayload(shown, nextAnswers, quiz.categories, duration, historyKey, activeMode))
-      saveQuestionResults(buildQuestionResultPayloads(shown, nextAnswers, historyKey))
+      saveQuizResult(buildQuizResultPayload(shown, nextAnswers, quiz.categories, duration, historyKey, activeMode), session?.user.id)
+      saveQuestionResults(buildQuestionResultPayloads(shown, nextAnswers, historyKey), session?.user.id)
     }} onCancel={backToStart} />}
     {view === 'results' && <ResultPage questions={resultQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? setFicheSubject : undefined} />}
     {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
@@ -324,7 +324,7 @@ function AppInner({ profile, onProfileChange, session }: { profile: Profile | nu
       const row = dataset.rows.find((r) => r[dataset.schema.subjectColumn] === ficheSubject)
       return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} i18n={dataset.i18n} onClose={() => setFicheSubject(null)} /> : null
     })()}
-    {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} historyKey={historyKeyOf(dataset, quiz)} onReplayMissed={replayMissed} />}
+    {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} historyKey={historyKeyOf(dataset, quiz)} userId={session?.user.id} onReplayMissed={replayMissed} />}
     {view === 'profile' && <ProfilePage profile={profile} session={session} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next, session?.user.id); onProfileChange(next) }} onViewHistory={() => viewHistory('profile')} />}
     <footer className="app-footer">{t('footer.version', { hash: __COMMIT_HASH__ })}</footer>
   </main>

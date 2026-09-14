@@ -10,7 +10,7 @@ import { ScoreChart } from './ScoreChart'
 
 const MODE_ICONS: Record<GameMode, string> = { classic: '🎯', timeAttack: '⏱️', noMistake: '🔥' }
 
-export function HistoryPage({ onBack, quiz, historyKey, onReplayMissed }: { onBack: () => void; quiz: Quiz; historyKey: string; onReplayMissed: (questions: Question[]) => void }) {
+export function HistoryPage({ onBack, quiz, historyKey, userId, onReplayMissed }: { onBack: () => void; quiz: Quiz; historyKey: string; userId?: string | null; onReplayMissed: (questions: Question[]) => void }) {
   const t = useT()
   const locale = useLocale()
   const shortDate = (iso: string) => new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
@@ -30,9 +30,9 @@ export function HistoryPage({ onBack, quiz, historyKey, onReplayMissed }: { onBa
   const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchQuizHistory().then(setRows).catch(() => setError(t('history.loadError')))
-    fetchQuestionResults().then(setQuestionRows).catch(() => {})
-  }, [t])
+    fetchQuizHistory(userId).then(setRows).catch(() => setError(t('history.loadError')))
+    fetchQuestionResults(userId).then(setQuestionRows).catch(() => {})
+  }, [t, userId])
 
   const quizTitles = rows ? Array.from(new Set(rows.map((row) => row.quiz_title))) : []
   const activeQuiz = selectedQuiz && quizTitles.includes(selectedQuiz) ? selectedQuiz : (quizTitles.includes(historyKey) ? historyKey : quizTitles[0])

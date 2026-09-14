@@ -1,7 +1,10 @@
-import { describe, expect, it } from 'vitest'
+// @vitest-environment jsdom
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { BooleanQuestion, Category, QCMQuestion } from '../types/quiz'
 import type { QuestionResultRow, QuizResultRow } from '../types/history'
 import { bucketsToChartGroups, buildQuestionResultPayloads, buildQuizResultPayload, computeMissedQuestions, computeRecords, sumBuckets } from './quizHistory'
+
+vi.mock('./supabase', () => ({ supabase: { from: vi.fn() } }))
 
 const categories: Category[] = [{ id: 'histoire', label: 'Histoire' }, { id: 'geo', label: 'Géographie' }]
 
@@ -232,5 +235,92 @@ describe('computeMissedQuestions', () => {
 
   it('returns an empty array for no history', () => {
     expect(computeMissedQuestions([], 'Culture générale')).toEqual([])
+  })
+})
+
+// Table mock reproduisant la forme utilisée par quizHistory.ts : `.select().eq()` et `.upsert()`
+// renvoient chacun une promesse `{ data, error }`, comme le client Supabase réel.
+function mockTable({ selectResult = { data: [] as unknown, error: null as unknown }, upsertResult = { data: null as unknown, error: null as unknown } } = {}) {
+  return {
+    select: vi.fn(() => ({ eq: vi.fn().mockResolvedValue(selectResult) })),
+    upsert: vi.fn().mockResolvedValue(upsertResult),
+  }
+}
+
+describe('saveQuizResult / fetchQuizHistory (sync cloud)', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.resetModules()
+  })
+
+  it('reste 100% local quand personne n’est connecté (comportement inchangé)', async () => {
+    const { supabase } = await import('./supabase')
+    const { saveQuizResult, fetchQuizHistory } = await import('./quizHistory')
+    await saveQuizResult(buildQuizResultPayload([qcm], { q1: ['a'] }, categories, 10, 'Culture générale'))
+    expect(supabase.from).not.toHaveBeenCalled()
+    const rows = await fetchQuizHistory(null)
+    expect(rows).toHaveLength(1)
+    expect(supabase.from).not.toHaveBeenCalled()
+  })
+
+  it('pousse la partie vers le cloud à la sauvegarde quand connecté', async () => {
+    const { supabase } = await import('./supabase')
+    const table = mockTable()
+    vi.mocked(supabase.from).mockReturnValue(table as never)
+    const { saveQuizResult } = await import('./quizHistory')
+    await saveQuizResult(buildQuizResultPayload([qcm], { q1: ['a'] }, categories, 10, 'Culture générale'), 'user-1')
+    expect(supabase.from).toHaveBeenCalledWith('quiz_forge_quiz_results')
+    expect(table.upsert).toHaveBeenCalledWith([expect.objectContaining({ user_id: 'user-1', quiz_title: 'Culture générale' })], { onConflict: 'id' })
+  })
+
+  it('fusionne l’historique local et celui du cloud (union par id)', async () => {
+    const cloudRow = row({ id: 'cloud-1', quiz_title: 'Depuis un autre appareil' })
+    const table = mockTable({ selectResult: { data: [cloudRow], error: null } })
+    const { supabase } = await import('./supabase')
+    vi.mocked(supabase.from).mockReturnValue(table as never)
+    localStorage.setItem('quiz-forge:quiz-results', JSON.stringify([row({ id: 'local-1' })]))
+    const { fetchQuizHistory } = await import('./quizHistory')
+    const rows = await fetchQuizHistory('user-1')
+    expect(rows.map((r) => r.id).sort()).toEqual(['cloud-1', 'local-1'])
+  })
+
+  it('pousse vers le cloud les parties locales absentes du cloud, pas celles déjà présentes', async () => {
+    const cloudRow = row({ id: 'cloud-1' })
+    const table = mockTable({ selectResult: { data: [cloudRow], error: null } })
+    const { supabase } = await import('./supabase')
+    vi.mocked(supabase.from).mockReturnValue(table as never)
+    localStorage.setItem('quiz-forge:quiz-results', JSON.stringify([row({ id: 'cloud-1' }), row({ id: 'local-only' })]))
+    const { fetchQuizHistory } = await import('./quizHistory')
+    await fetchQuizHistory('user-1')
+    expect(table.upsert).toHaveBeenCalledTimes(1)
+    const [pushed] = vi.mocked(table.upsert).mock.calls[0]
+    expect((pushed as { id: string }[]).map((r) => r.id)).toEqual(['local-only'])
+  })
+
+  it('conserve l’historique local si le cloud échoue', async () => {
+    const table = mockTable({ selectResult: { data: null, error: new Error('network down') } })
+    const { supabase } = await import('./supabase')
+    vi.mocked(supabase.from).mockReturnValue(table as never)
+    localStorage.setItem('quiz-forge:quiz-results', JSON.stringify([row({ id: 'local-1' })]))
+    const { fetchQuizHistory } = await import('./quizHistory')
+    const rows = await fetchQuizHistory('user-1')
+    expect(rows.map((r) => r.id)).toEqual(['local-1'])
+  })
+})
+
+describe('saveQuestionResults / fetchQuestionResults (sync cloud)', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.resetModules()
+  })
+
+  it('fusionne les réponses locales et celles du cloud (union par id)', async () => {
+    const table = mockTable({ selectResult: { data: [questionRow({ id: 'cloud-1' })], error: null } })
+    const { supabase } = await import('./supabase')
+    vi.mocked(supabase.from).mockReturnValue(table as never)
+    localStorage.setItem('quiz-forge:question-results', JSON.stringify([questionRow({ id: 'local-1' })]))
+    const { fetchQuestionResults } = await import('./quizHistory')
+    const rows = await fetchQuestionResults('user-1')
+    expect(rows.map((r) => r.id).sort()).toEqual(['cloud-1', 'local-1'])
   })
 })
