@@ -1,5 +1,5 @@
 import type { AnswersByQuestion, Category, Question } from '../types/quiz'
-import type { ChartGroup, MissedQuestion, QuestionResultPayload, QuestionResultRow, QuizRecords, QuizResultPayload, QuizResultRow, StatBucket } from '../types/history'
+import type { ChartGroup, MissedQuestion, QuestionResultPayload, QuestionResultRow, QuizRecords, QuizResultPayload, QuizResultRow, RadarPoint, StatBucket } from '../types/history'
 import { isCorrect } from '../components/ResultPage'
 import type { GameMode } from '../components/QuizPage'
 import { supabase } from './supabase'
@@ -231,5 +231,15 @@ export function bucketsToChartGroups(
       { label: passLabel, value: bucket.correct, color: '#34d399' },
       { label: failLabel, value: bucket.total - bucket.correct, color: '#fb7185' },
     ].filter((slice) => slice.value > 0),
+  }))
+}
+
+/** Un point par clé (taux de réussite en %), pour `RadarChart` — contrairement à
+ *  `bucketsToChartGroups`, une seule valeur par axe plutôt qu'un couple réussi/raté. */
+export function bucketsToRadarPoints(buckets: Record<string, StatBucket>, labelOf: (key: string) => string): RadarPoint[] {
+  return Object.entries(buckets).map(([key, bucket]) => ({
+    key,
+    label: labelOf(key),
+    percent: bucket.total ? Math.round((bucket.correct / bucket.total) * 100) : 0,
   }))
 }

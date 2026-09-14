@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { BooleanQuestion, Category, QCMQuestion } from '../types/quiz'
 import type { QuestionResultRow, QuizResultRow } from '../types/history'
-import { bucketsToChartGroups, buildQuestionResultPayloads, buildQuizResultPayload, computeMissedQuestions, computeRecords, sumBuckets } from './quizHistory'
+import { bucketsToChartGroups, bucketsToRadarPoints, buildQuestionResultPayloads, buildQuizResultPayload, computeMissedQuestions, computeRecords, sumBuckets } from './quizHistory'
 
 vi.mock('./supabase', () => ({ supabase: { from: vi.fn() } }))
 
@@ -164,6 +164,28 @@ describe('bucketsToChartGroups', () => {
   it('applies the label resolver to each key', () => {
     const groups = bucketsToChartGroups({ qcm: { correct: 1, total: 1 } }, () => 'QCM')
     expect(groups[0].label).toBe('QCM')
+  })
+})
+
+describe('bucketsToRadarPoints', () => {
+  it('computes a success percentage per key, rounded', () => {
+    const points = bucketsToRadarPoints({ qcm: { correct: 1, total: 3 } }, (key) => key)
+    expect(points).toEqual([{ key: 'qcm', label: 'qcm', percent: 33 }])
+  })
+
+  it('returns 0% for an empty bucket rather than dividing by zero', () => {
+    const points = bucketsToRadarPoints({ qcm: { correct: 0, total: 0 } }, (key) => key)
+    expect(points[0].percent).toBe(0)
+  })
+
+  it('applies the label resolver to each key', () => {
+    const points = bucketsToRadarPoints({ hard: { correct: 2, total: 2 } }, () => 'Difficile')
+    expect(points[0]).toEqual({ key: 'hard', label: 'Difficile', percent: 100 })
+  })
+
+  it('keeps one point per key, in insertion order', () => {
+    const points = bucketsToRadarPoints({ easy: { correct: 1, total: 1 }, hard: { correct: 0, total: 1 } }, (key) => key)
+    expect(points.map((p) => p.key)).toEqual(['easy', 'hard'])
   })
 })
 

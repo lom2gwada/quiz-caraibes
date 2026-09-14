@@ -43,6 +43,12 @@ export interface ChartGroup {
   data: { label: string; value: number; color: string }[]
 }
 
+export interface RadarPoint {
+  key: string
+  label: string
+  percent: number
+}
+
 export interface QuestionResultPayload {
   quiz_title: string
   question_id: string

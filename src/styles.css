@@ -213,6 +213,14 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .pie-chart ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
 .pie-chart li { display: flex; align-items: center; gap: .5rem; color: var(--text-soft); font-size: .85rem; }
 .pie-chart .swatch { width: .7rem; height: .7rem; border-radius: 50%; flex-shrink: 0; }
+.radar-chart { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.4rem; display: flex; justify-content: center; }
+.radar-chart svg { width: 100%; max-width: 320px; height: auto; display: block; overflow: visible; }
+.radar-chart-grid { fill: none; stroke: var(--border); stroke-width: .4; }
+.radar-chart-axis { stroke: var(--border); stroke-width: .4; }
+.radar-chart-area { fill: var(--accent); fill-opacity: .18; stroke: none; }
+.radar-chart-line { fill: none; stroke: var(--accent); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.radar-chart-point { fill: var(--accent); }
+.radar-chart-label { fill: var(--text-muted); font-size: 3.6px; }
 .history-list { display: grid; gap: .7rem; list-style: none; margin: 0; padding: 0; }.history-item { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding: .8rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: .6rem; color: var(--text-soft); font-size: .88rem; }.history-score { font-size: 1.2rem; font-weight: 800; color: var(--ink); min-width: 3.2rem; }.history-date { color: var(--text-muted); }.history-categories { flex: 1; min-width: 160px; }
 .missed-questions { margin: 0 0 2rem; }.stats-group-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .9rem; }.stats-group-header .stats-group-title { margin: 0; }.missed-list { display: grid; gap: .6rem; list-style: none; margin: 0; padding: 0; }.missed-item { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding: .7rem 1rem; background: var(--surface-solid); border-left: 4px solid var(--error); border-radius: 0 .5rem .5rem 0; color: var(--text); font-size: .9rem; }.missed-ratio { color: var(--text-muted); font-size: .8rem; white-space: nowrap; }
 .quiz-select { display: grid; gap: .4rem; color: var(--text-soft); max-width: 280px; margin-bottom: 1.5rem; }

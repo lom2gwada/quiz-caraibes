@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import type { Question, Quiz } from '../types/quiz'
 import type { QuestionResultRow, QuizResultRow } from '../types/history'
 import { useLocale, useT } from '../i18n'
-import { bucketsToChartGroups, computeMissedQuestions, computeRecords, fetchQuestionResults, fetchQuizHistory, sumBuckets } from '../utils/quizHistory'
+import { bucketsToChartGroups, bucketsToRadarPoints, computeMissedQuestions, computeRecords, fetchQuestionResults, fetchQuizHistory, sumBuckets } from '../utils/quizHistory'
 import { formatDuration } from '../utils/time'
 import { PieChart } from './PieChart'
 import { QUESTION_TYPES, difficultyLabel, typeLabel, type GameMode } from './QuizPage'
+import { RadarChart } from './RadarChart'
 import { ScoreChart } from './ScoreChart'
 
 const MODE_ICONS: Record<GameMode, string> = { classic: '🎯', timeAttack: '⏱️', noMistake: '🔥' }
@@ -41,8 +42,8 @@ export function HistoryPage({ onBack, quiz, historyKey, userId, onReplayMissed }
   const records = quizRows ? computeRecords(quizRows) : null
   const chartPoints = quizRows ? [...quizRows].reverse().map((row) => ({ label: shortDate(row.created_at), score: row.score })) : []
   const byCategory = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_category), catName, pass, fail) : []
-  const byType = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_type), typeName, pass, fail) : []
-  const byDifficulty = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_difficulty), diffName, pass, fail) : []
+  const byType = quizRows ? bucketsToRadarPoints(sumBuckets(quizRows, (row) => row.by_type), typeName) : []
+  const byDifficulty = quizRows ? bucketsToRadarPoints(sumBuckets(quizRows, (row) => row.by_difficulty), diffName) : []
 
   const missedQuestions = activeQuiz ? computeMissedQuestions(questionRows, activeQuiz) : []
   const canReplay = activeQuiz === historyKey
@@ -80,11 +81,11 @@ export function HistoryPage({ onBack, quiz, historyKey, userId, onReplayMissed }
         </div>
         <div className="stats-group">
           <h3 className="stats-group-title">{t('history.byType')}</h3>
-          <div className="stats-grid">{byType.map((group) => <PieChart key={`type-${group.key}`} title={group.label} data={group.data} />)}</div>
+          <RadarChart points={byType} ariaLabel={t('history.byType')} />
         </div>
         <div className="stats-group">
           <h3 className="stats-group-title">{t('result.byDifficulty')}</h3>
-          <div className="stats-grid">{byDifficulty.map((group) => <PieChart key={`difficulty-${group.key}`} title={group.label} data={group.data} />)}</div>
+          <RadarChart points={byDifficulty} ariaLabel={t('result.byDifficulty')} />
         </div>
       </div>
     </>}
