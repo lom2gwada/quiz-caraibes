@@ -22,7 +22,6 @@ import { applyLocale, DEFAULT_LOCALE, resolveLocale, type Locale } from './i18n/
 import type { DataI18n } from './i18n/data'
 import { buildQuestionResultPayloads, buildQuizResultPayload, saveQuestionResults, saveQuizResult } from './utils/quizHistory'
 import { fetchProfile, saveProfile } from './utils/profile'
-import { useAuth } from './hooks/useAuth'
 import { applyTheme } from './utils/theme'
 import { parseQuiz } from './utils/quizValidation'
 import { formatNumber } from './utils/number'
@@ -117,16 +116,15 @@ function pickRandomQuestions<T>(questions: T[], count: number): T[] {
   return shuffle(questions).slice(0, Math.min(count, questions.length))
 }
 
-export default function App() {
-  const auth = useAuth()
-  const userId = auth.session?.user.id ?? null
+export default function App({ session }: { session: Session | null }) {
+  const userId = session?.user.id ?? null
   const [profile, setProfile] = useState<Profile | null>(null)
   useEffect(() => { fetchProfile(userId).then(setProfile).catch(() => {}) }, [userId])
   const locale = resolveLocale(profile?.locale)
   useEffect(() => { applyLocale(locale) }, [locale])
   return (
     <LocaleProvider locale={locale}>
-      <AppInner profile={profile} onProfileChange={setProfile} session={auth.session} />
+      <AppInner profile={profile} onProfileChange={setProfile} session={session} />
     </LocaleProvider>
   )
 }

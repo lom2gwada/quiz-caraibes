@@ -149,6 +149,24 @@ export const fr = {
   'auth.error': 'Email ou mot de passe incorrect.',
   'auth.signOut': 'Se déconnecter',
   'auth.connectedAs': 'Connecté en tant que {email}',
+  'auth.gateTitle': 'Connexion',
+
+  // — lien d'invité (accès temporaire sans compte) —
+  'guest.title': 'Lien d’invité',
+  'guest.hint': 'Partage un accès temporaire à quiz-forge, sans compte, avec qui tu veux.',
+  'guest.duration': 'Durée',
+  'guest.duration.24h': '24 heures',
+  'guest.duration.3d': '3 jours',
+  'guest.duration.7d': '7 jours',
+  'guest.labelPlaceholder': 'Note (optionnel, ex. « Mamie »)',
+  'guest.create': 'Générer un lien',
+  'guest.copy': 'Copier',
+  'guest.copied': 'Copié ✓',
+  'guest.revoke': 'Révoquer',
+  'guest.empty': 'Aucun lien actif.',
+  'guest.expiresAt': 'Expire le {date}',
+  'guest.createError': 'Impossible de créer le lien. Réessaye.',
+  'guest.loadError': 'Impossible de charger les liens.',
 
   // — page « ⚙️ Quiz » (contenu / génération) —
   'content.title': 'Quiz',

@@ -7,6 +7,7 @@ import { useT } from '../i18n'
 import { playClick } from '../utils/sound'
 import { applyTheme } from '../utils/theme'
 import { AuthPanel } from './AuthPanel'
+import { GuestPassPanel } from './GuestPassPanel'
 
 // Grille orientée Caraïbes / voyage, groupée par thème (une ligne visuelle ≈ un groupe) :
 // visages + faune marine · faune de terre + paysage d'île · eau + voyage/navigation + soleil.
@@ -119,6 +120,7 @@ export function ProfilePage({ profile, session, onBack, onSave, onViewHistory }:
       <button type="button" className="secondary" onClick={onViewHistory}>🕓 {t('nav.history')}</button>
     </div>
     <AuthPanel session={session} />
+    {session && <GuestPassPanel userId={session.user.id} />}
     <form className="profile-form" onSubmit={submit}>
       <label>{t('profile.pseudo')}
         <input value={pseudo} onChange={(event) => { setPseudo(event.target.value); setSaved(false) }} required maxLength={30} placeholder={t('profile.pseudoPlaceholder')} />
