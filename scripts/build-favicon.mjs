@@ -10,7 +10,10 @@ const OUT = new URL('../public/favicon.svg', import.meta.url)
 const MAINLAND = new Set(['Belize', 'Guatemala', 'Honduras', 'Nicaragua', 'Costa Rica', 'Panama', 'Colombie', 'Venezuela', 'Mexique'])
 const CANVAS = 320
 const PAD = 4
-const DOT_R = 6
+// Même échelle que les points de RegionOverviewPage (styles.css .region-overview-dot, mêmes
+// coordonnées source) : 6 donnait des cercles bien plus gros que les territoires réels qu'ils
+// représentent, se chevauchant en un gros blob près de Saint-Martin/Saint-Barthélemy/Sint Maarten.
+const DOT_R = 2
 const BG = '#04212b' // --bg (thème lagon)
 const FG = '#2dd4bf' // --accent (thème lagon)
 
