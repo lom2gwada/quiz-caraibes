@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import type { Question, Quiz } from '../types/quiz'
 import type { QuestionResultRow, QuizResultRow } from '../types/history'
 import { useLocale, useT } from '../i18n'
-import { bucketsToChartGroups, bucketsToRadarPoints, computeMissedQuestions, computeRecords, fetchQuestionResults, fetchQuizHistory, sumBuckets } from '../utils/quizHistory'
+import { bucketsToRadarPoints, computeMissedQuestions, computeRecords, fetchQuestionResults, fetchQuizHistory, sumBuckets } from '../utils/quizHistory'
 import { formatDuration } from '../utils/time'
-import { PieChart } from './PieChart'
+import { HeatmapChart } from './HeatmapChart'
 import { QUESTION_TYPES, difficultyLabel, typeLabel, type GameMode } from './QuizPage'
 import { RadarChart } from './RadarChart'
 import { ScoreChart } from './ScoreChart'
@@ -22,8 +22,6 @@ export function HistoryPage({ onBack, quiz, historyKey, userId, onReplayMissed }
   // Anciennes lignes (libellé FR déjà stocké) : introuvable comme id → affiché tel quel.
   const catName = (key: string) => quiz.categories.find((category) => category.id === key)?.label ?? key
   const modeLabel = (mode: GameMode) => mode === 'timeAttack' ? t('start.mode.timeAttack') : mode === 'noMistake' ? t('start.mode.noMistake') : t('start.mode.classic')
-  const pass = t('result.passed')
-  const fail = t('result.failed')
 
   const [rows, setRows] = useState<QuizResultRow[] | null>(null)
   const [questionRows, setQuestionRows] = useState<QuestionResultRow[]>([])
@@ -41,7 +39,7 @@ export function HistoryPage({ onBack, quiz, historyKey, userId, onReplayMissed }
 
   const records = quizRows ? computeRecords(quizRows) : null
   const chartPoints = quizRows ? [...quizRows].reverse().map((row) => ({ label: shortDate(row.created_at), score: row.score })) : []
-  const byCategory = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_category), catName, pass, fail) : []
+  const byCategory = quizRows ? bucketsToRadarPoints(sumBuckets(quizRows, (row) => row.by_category), catName) : []
   const byType = quizRows ? bucketsToRadarPoints(sumBuckets(quizRows, (row) => row.by_type), typeName) : []
   const byDifficulty = quizRows ? bucketsToRadarPoints(sumBuckets(quizRows, (row) => row.by_difficulty), diffName) : []
 
@@ -77,7 +75,7 @@ export function HistoryPage({ onBack, quiz, historyKey, userId, onReplayMissed }
       <div className="stats-groups">
         <div className="stats-group">
           <h3 className="stats-group-title">{t('result.byCategory')}</h3>
-          <div className="stats-grid">{byCategory.map((group) => <PieChart key={`category-${group.key}`} title={group.label} data={group.data} />)}</div>
+          <HeatmapChart points={byCategory} />
         </div>
         <div className="stats-group">
           <h3 className="stats-group-title">{t('history.byType')}</h3>
