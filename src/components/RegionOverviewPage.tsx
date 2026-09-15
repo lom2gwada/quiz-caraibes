@@ -35,10 +35,11 @@ interface CapitalPoint {
 // la même distance en unités de viewBox correspond à beaucoup plus de pixels réels.
 const SNAP_DISTANCE_SQ = 9
 
-/** Grande carte de la région (vue d'ensemble, tous les territoires à la fois) : survoler un point
- * affiche le nom du territoire et de sa capitale ; le curseur donne ses coordonnées géographiques
- * en continu. Les points sont placés sur les coordonnées réelles de la capitale (pas le centroïde
- * du territoire, moins précis, utilisé par la petite carte des fiches). */
+/** Grande carte de la région (vue d'ensemble, tous les territoires à la fois) : survoler un pays
+ * (sa silhouette, ou son point pour les toutes petites îles) affiche son nom et sa capitale ; le
+ * curseur donne ses coordonnées géographiques en continu. Les points sont placés sur les
+ * coordonnées réelles de la capitale (pas le centroïde du territoire, moins précis, utilisé par
+ * la petite carte des fiches). */
 export function RegionOverviewPage({ rows, schema, region, regionViewBox, capitalColumn, latitudeColumn, longitudeColumn, i18n, onBack, onOpenFiche }: RegionOverviewPageProps) {
   const t = useT()
   const locale = useLocale()
@@ -88,11 +89,21 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
     return nearest
   }
 
+  // Un pays avec une vraie silhouette (`<path data-name>`) répond sur toute sa surface, pas
+  // seulement près du point de sa capitale — plus confortable pour les grands pays, et surtout
+  // sur tactile où viser un point de quelques pixels est difficile. `nearestAt` reste le repli
+  // pour les toutes petites îles (pas de silhouette, juste un point) et les clics à côté.
+  const resolveId = (event: ReactMouseEvent<SVGSVGElement>, loc: DOMPoint): string | null => {
+    const target = event.target
+    if (target instanceof SVGElement && target.dataset.name) return target.dataset.name
+    return nearestAt(loc)
+  }
+
   const handleMove = (event: ReactMouseEvent<SVGSVGElement>) => {
     const loc = toSvgPoint(event)
     if (!loc) return
     setCoords(viewToLonLat(loc.x, loc.y))
-    setHoverId(nearestAt(loc))
+    setHoverId(resolveId(event, loc))
   }
 
   const handleLeave = () => { setHoverId(null); setCoords(null) }
@@ -100,7 +111,7 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
   const handleClick = (event: ReactMouseEvent<SVGSVGElement>) => {
     const loc = toSvgPoint(event)
     if (!loc) return
-    const id = nearestAt(loc)
+    const id = resolveId(event, loc)
     if (id) onOpenFiche?.(id)
   }
   const hoverPoint = points.find((p) => p.canonical === hoverId)
@@ -132,13 +143,14 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
         >
           <g className="region-land">
             {Object.entries(region).map(([name, shape]) => shape.d && (
-              <path key={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />
+              <path key={name} data-name={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />
             ))}
           </g>
           <g>
             {points.map((p) => (
               <circle
                 key={p.canonical}
+                data-name={p.canonical}
                 cx={p.x}
                 cy={p.y}
                 className={p.canonical === hoverId ? 'region-overview-dot is-active' : 'region-overview-dot'}
