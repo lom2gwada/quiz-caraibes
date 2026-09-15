@@ -22,6 +22,7 @@ import { applyLocale, DEFAULT_LOCALE, resolveLocale, type Locale } from './i18n/
 import type { DataI18n } from './i18n/data'
 import { buildQuestionResultPayloads, buildQuizResultPayload, saveQuestionResults, saveQuizResult } from './utils/quizHistory'
 import { fetchProfile, saveProfile } from './utils/profile'
+import { fetchCaribbeanDataset } from './utils/caribbeanDataset'
 import { applyTheme } from './utils/theme'
 import { parseQuiz } from './utils/quizValidation'
 import { formatNumber } from './utils/number'
@@ -85,31 +86,37 @@ function safeGenerate(dataset: Dataset, seed: string, locale: Locale = DEFAULT_L
   }
 }
 
+/** Construit le jeu de données Caraïbes à partir de lignes CSV — même forme que `rows` viennent du
+ *  fichier embarqué (démarrage) ou de Supabase (bascule silencieuse une fois le fetch arrivé, voir
+ *  `caribbeanDataset.ts`) : shapes/i18n/aliases/region restent du code statique, indexés par le nom
+ *  exact des territoires et certaines valeurs de cellules (cf. plan discuté avec l'utilisateur). */
+function buildCaribbeanDataset(rows: Row[]): Dataset {
+  return {
+    rows,
+    schema: { ...inferSchema(rows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' },
+    shapes: caribbeanShapes,
+    aliases: caribbeanAliases,
+    region: caribbeanRegion,
+    regionViewBox: REGION_VIEWBOX,
+    capitalColumn: 'capitale',
+    latitudeColumn: 'latitude_deg',
+    longitudeColumn: 'longitude_deg',
+    i18n: caribbeanI18n,
+    nouns: { fr: 'territoire', en: 'territory', es: 'territorio', nl: 'gebied', ht: 'teritwa' },
+    titles: {
+      fr: 'Autour de la mer des Caraïbes',
+      en: 'Around the Caribbean Sea',
+      es: 'Alrededor del mar Caribe',
+      nl: 'Rond de Caribische Zee',
+      ht: 'Toutalantou lanmè Karayib la',
+    },
+  }
+}
+
 const bundledRows = (() => {
   try { return parseCsv(caribbeanCsv) } catch { return [] as Row[] }
 })()
-const initialDataset: Dataset | null = bundledRows.length
-  ? {
-      rows: bundledRows,
-      schema: { ...inferSchema(bundledRows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' },
-      shapes: caribbeanShapes,
-      aliases: caribbeanAliases,
-      region: caribbeanRegion,
-      regionViewBox: REGION_VIEWBOX,
-      capitalColumn: 'capitale',
-      latitudeColumn: 'latitude_deg',
-      longitudeColumn: 'longitude_deg',
-      i18n: caribbeanI18n,
-      nouns: { fr: 'territoire', en: 'territory', es: 'territorio', nl: 'gebied', ht: 'teritwa' },
-      titles: {
-        fr: 'Autour de la mer des Caraïbes',
-        en: 'Around the Caribbean Sea',
-        es: 'Alrededor del mar Caribe',
-        nl: 'Rond de Caribische Zee',
-        ht: 'Toutalantou lanmè Karayib la',
-      },
-    }
-  : null
+const initialDataset: Dataset | null = bundledRows.length ? buildCaribbeanDataset(bundledRows) : null
 const initialQuiz = initialDataset ? safeGenerate(initialDataset, 'caribbean').quiz : FALLBACK_QUIZ
 
 function pickRandomQuestions<T>(questions: T[], count: number): T[] {
@@ -120,16 +127,18 @@ export default function App({ session }: { session: Session | null }) {
   const userId = session?.user.id ?? null
   const [profile, setProfile] = useState<Profile | null>(null)
   useEffect(() => { fetchProfile(userId).then(setProfile).catch(() => {}) }, [userId])
+  const [dbRows, setDbRows] = useState<Row[] | null>(null)
+  useEffect(() => { fetchCaribbeanDataset().then(setDbRows).catch(() => {}) }, [])
   const locale = resolveLocale(profile?.locale)
   useEffect(() => { applyLocale(locale) }, [locale])
   return (
     <LocaleProvider locale={locale}>
-      <AppInner profile={profile} onProfileChange={setProfile} session={session} />
+      <AppInner profile={profile} onProfileChange={setProfile} session={session} dbRows={dbRows} />
     </LocaleProvider>
   )
 }
 
-function AppInner({ profile, onProfileChange, session }: { profile: Profile | null; onProfileChange: (p: Profile) => void; session: Session | null }) {
+function AppInner({ profile, onProfileChange, session, dbRows }: { profile: Profile | null; onProfileChange: (p: Profile) => void; session: Session | null; dbRows: Row[] | null }) {
   const t = useT()
   const locale = useLocale()
   const tRef = useRef(t)
@@ -210,6 +219,17 @@ function AppInner({ profile, onProfileChange, session }: { profile: Profile | nu
   useEffect(() => {
     if (dataset && genRef.current.locale !== locale) applyGenerated(dataset, genRef.current.seed)
   }, [locale, dataset]) // applyGenerated volontairement hors deps : ne dépend que de (locale, dataset)
+
+  // Bascule silencieuse vers le dataset Supabase (éditable sans redéploiement, cf. caribbeanDataset.ts)
+  // dès qu'il arrive — seulement si l'utilisateur n'a pas depuis importé son propre CSV (`dataset` a
+  // alors changé de référence, ce test suffit à ne pas écraser son import).
+  useEffect(() => {
+    if (dbRows?.length && dataset === initialDataset) {
+      const nextDataset = buildCaribbeanDataset(dbRows)
+      setDataset(nextDataset)
+      applyGenerated(nextDataset, genRef.current.seed)
+    }
+  }, [dbRows]) // volontairement seul en deps : ne doit se déclencher qu'à l'arrivée de dbRows
 
   const loadCsv = async (file?: File) => {
     if (!file) return
