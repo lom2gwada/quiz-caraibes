@@ -218,6 +218,8 @@ export const fr = {
   'fiche.regionLabel': 'Position dans les Caraïbes : {name} (survoler pour agrandir)',
   'fiche.modalLabel': 'Fiche : {name}',
   'fiche.close': 'Fermer',
+  'fiche.edit': 'Modifier',
+  'fiche.editError': "Impossible d'enregistrer les modifications. Réessayez.",
 
   // — tableau de données —
   'data.title': 'Données source — {rows} lignes × {cols} colonnes',

@@ -23,6 +23,7 @@ import type { DataI18n } from './i18n/data'
 import { buildQuestionResultPayloads, buildQuizResultPayload, saveQuestionResults, saveQuizResult } from './utils/quizHistory'
 import { fetchProfile, saveProfile } from './utils/profile'
 import { fetchCaribbeanDataset } from './utils/caribbeanDataset'
+import { checkIsAdmin } from './utils/adminAccess'
 import { applyTheme } from './utils/theme'
 import { parseQuiz } from './utils/quizValidation'
 import { formatNumber } from './utils/number'
@@ -50,6 +51,9 @@ type Dataset = {
   nouns?: Partial<Record<Locale, string>>
   /** Titre du quiz par locale ; défaut = `schema.title`. La clé d'historique reste `schema.title`. */
   titles?: Partial<Record<Locale, string>>
+  /** Vrai uniquement pour le dataset Caraïbes construit depuis Supabase (buildCaribbeanDataset) :
+   *  seul celui-ci a une table éditable en face, donc seul lui autorise l'édition admin des fiches. */
+  editable?: boolean
 }
 
 const questionCounts = [5, 10, 20, 30, 50]
@@ -110,6 +114,7 @@ function buildCaribbeanDataset(rows: Row[]): Dataset {
       nl: 'Rond de Caribische Zee',
       ht: 'Toutalantou lanmè Karayib la',
     },
+    editable: true,
   }
 }
 
@@ -129,16 +134,21 @@ export default function App({ session }: { session: Session | null }) {
   useEffect(() => { fetchProfile(userId).then(setProfile).catch(() => {}) }, [userId])
   const [dbRows, setDbRows] = useState<Row[] | null>(null)
   useEffect(() => { fetchCaribbeanDataset().then(setDbRows).catch(() => {}) }, [])
+  const [isAdmin, setIsAdmin] = useState(false)
+  useEffect(() => {
+    if (!userId) { setIsAdmin(false); return }
+    checkIsAdmin().then(setIsAdmin).catch(() => setIsAdmin(false))
+  }, [userId])
   const locale = resolveLocale(profile?.locale)
   useEffect(() => { applyLocale(locale) }, [locale])
   return (
     <LocaleProvider locale={locale}>
-      <AppInner profile={profile} onProfileChange={setProfile} session={session} dbRows={dbRows} />
+      <AppInner profile={profile} onProfileChange={setProfile} session={session} dbRows={dbRows} isAdmin={isAdmin} />
     </LocaleProvider>
   )
 }
 
-function AppInner({ profile, onProfileChange, session, dbRows }: { profile: Profile | null; onProfileChange: (p: Profile) => void; session: Session | null; dbRows: Row[] | null }) {
+function AppInner({ profile, onProfileChange, session, dbRows, isAdmin }: { profile: Profile | null; onProfileChange: (p: Profile) => void; session: Session | null; dbRows: Row[] | null; isAdmin: boolean }) {
   const t = useT()
   const locale = useLocale()
   const tRef = useRef(t)
@@ -221,15 +231,26 @@ function AppInner({ profile, onProfileChange, session, dbRows }: { profile: Prof
   }, [locale, dataset]) // applyGenerated volontairement hors deps : ne dépend que de (locale, dataset)
 
   // Bascule silencieuse vers le dataset Supabase (éditable sans redéploiement, cf. caribbeanDataset.ts)
-  // dès qu'il arrive — seulement si l'utilisateur n'a pas depuis importé son propre CSV (`dataset` a
-  // alors changé de référence, ce test suffit à ne pas écraser son import).
+  // dès qu'il arrive — seulement si l'utilisateur n'a pas depuis importé son propre CSV (auquel cas
+  // `dataset` n'est plus le dataset Caraïbes éditable, `editable` n'y est pas défini).
   useEffect(() => {
-    if (dbRows?.length && dataset === initialDataset) {
+    if (dbRows?.length && dataset?.editable) {
       const nextDataset = buildCaribbeanDataset(dbRows)
       setDataset(nextDataset)
       applyGenerated(nextDataset, genRef.current.seed)
     }
   }, [dbRows]) // volontairement seul en deps : ne doit se déclencher qu'à l'arrivée de dbRows
+
+  // Un admin a corrigé un champ depuis une fiche (FicheModal) : on met à jour la ligne concernée
+  // dans le dataset en mémoire et on régénère le quiz courant (même seed), sans nouvel aller-retour
+  // réseau — la ligne modifiée vient déjà de la réponse de sauvegarde.
+  const handleDatasetRowUpdated = (updatedRow: Row) => {
+    if (!dataset) return
+    const canonical = updatedRow[dataset.schema.subjectColumn]
+    const nextDataset = { ...dataset, rows: dataset.rows.map((row) => row[dataset.schema.subjectColumn] === canonical ? updatedRow : row) }
+    setDataset(nextDataset)
+    applyGenerated(nextDataset, genRef.current.seed)
+  }
 
   const loadCsv = async (file?: File) => {
     if (!file) return
@@ -340,7 +361,7 @@ function AppInner({ profile, onProfileChange, session, dbRows }: { profile: Prof
     {view === 'map' && dataset?.region && dataset.regionViewBox && <RegionOverviewPage rows={dataset.rows} schema={dataset.schema} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} latitudeColumn={dataset.latitudeColumn} longitudeColumn={dataset.longitudeColumn} i18n={dataset.i18n} onOpenFiche={setFicheSubject} onBack={() => navigate('atlas')} />}
     {ficheSubject && dataset && (() => {
       const row = dataset.rows.find((r) => r[dataset.schema.subjectColumn] === ficheSubject)
-      return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} i18n={dataset.i18n} onClose={() => setFicheSubject(null)} /> : null
+      return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} i18n={dataset.i18n} canEdit={isAdmin && Boolean(dataset.editable)} onRowUpdated={handleDatasetRowUpdated} onClose={() => setFicheSubject(null)} /> : null
     })()}
     {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} historyKey={historyKeyOf(dataset, quiz)} userId={session?.user.id} onReplayMissed={replayMissed} />}
     {view === 'profile' && <ProfilePage profile={profile} session={session} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next, session?.user.id); onProfileChange(next) }} onViewHistory={() => viewHistory('profile')} />}

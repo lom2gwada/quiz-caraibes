@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { GenSchema, Row } from '../utils/quizGenerator'
 import type { DataI18n } from '../i18n/data'
@@ -6,6 +6,7 @@ import type { RegionShape } from '../data/region'
 import { makeDatasetI18n } from '../i18n/dataset'
 import { useLocale, useT } from '../i18n'
 import { Fiche } from './Fiche'
+import { FicheEditForm } from './FicheEditForm'
 
 interface FicheModalProps {
   row: Row
@@ -15,15 +16,19 @@ interface FicheModalProps {
   regionViewBox?: string
   capitalColumn?: string
   i18n?: DataI18n
+  /** Admin sur un dataset éditable (Caraïbes/Supabase) : affiche le bouton « Modifier ». */
+  canEdit?: boolean
+  onRowUpdated?: (updatedRow: Row) => void
   onClose: () => void
 }
 
 /** Affiche une fiche dans une modale centrée (portail sur `<body>`) : Échap / clic hors panneau
- * / bouton × pour fermer. */
-export function FicheModal({ row, schema, shapes, region, regionViewBox, capitalColumn, i18n, onClose }: FicheModalProps) {
+ * / bouton × pour fermer. Admin sur un dataset éditable : bascule vers FicheEditForm. */
+export function FicheModal({ row, schema, shapes, region, regionViewBox, capitalColumn, i18n, canEdit, onRowUpdated, onClose }: FicheModalProps) {
   const t = useT()
   const locale = useLocale()
   const closeRef = useRef<HTMLButtonElement>(null)
+  const [editing, setEditing] = useState(false)
   const name = useMemo(() => makeDatasetI18n(i18n, locale).value(row[schema.subjectColumn] ?? ''), [i18n, locale, row, schema.subjectColumn])
 
   useEffect(() => {
@@ -48,7 +53,10 @@ export function FicheModal({ row, schema, shapes, region, regionViewBox, capital
         onClick={(event) => event.stopPropagation()}
       >
         <button ref={closeRef} type="button" className="modal-close" onClick={onClose} aria-label={t('fiche.close')}>×</button>
-        <Fiche row={row} schema={schema} shapes={shapes} region={region} regionViewBox={regionViewBox} capitalColumn={capitalColumn} i18n={i18n} />
+        {canEdit && !editing && <button type="button" className="secondary fiche-edit-toggle" onClick={() => setEditing(true)}>✏️ {t('fiche.edit')}</button>}
+        {editing
+          ? <FicheEditForm row={row} schema={schema} onCancel={() => setEditing(false)} onSaved={(updatedRow) => { onRowUpdated?.(updatedRow); setEditing(false) }} />
+          : <Fiche row={row} schema={schema} shapes={shapes} region={region} regionViewBox={regionViewBox} capitalColumn={capitalColumn} i18n={i18n} />}
       </div>
     </div>,
     document.body,

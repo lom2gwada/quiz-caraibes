@@ -204,6 +204,8 @@ export const es: Record<MessageKey, string> = {
   'fiche.regionLabel': 'Posición en el Caribe: {name} (pasa el ratón para ampliar)',
   'fiche.modalLabel': 'Ficha: {name}',
   'fiche.close': 'Cerrar',
+  'fiche.edit': 'Editar',
+  'fiche.editError': 'No se pudieron guardar los cambios. Inténtalo de nuevo.',
 
   'data.title': 'Datos de origen — {rows} filas × {cols} columnas',
 

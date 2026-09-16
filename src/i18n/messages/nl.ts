@@ -204,6 +204,8 @@ export const nl: Record<MessageKey, string> = {
   'fiche.regionLabel': 'Ligging in het Caribisch gebied: {name} (beweeg de muis om te vergroten)',
   'fiche.modalLabel': 'Kaart: {name}',
   'fiche.close': 'Sluiten',
+  'fiche.edit': 'Bewerken',
+  'fiche.editError': 'Kon de wijzigingen niet opslaan. Probeer opnieuw.',
 
   'data.title': 'Brongegevens — {rows} rijen × {cols} kolommen',
 

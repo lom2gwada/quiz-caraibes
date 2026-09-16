@@ -203,6 +203,8 @@ export const en: Record<MessageKey, string> = {
   'fiche.regionLabel': 'Position in the Caribbean: {name} (hover to enlarge)',
   'fiche.modalLabel': 'Card: {name}',
   'fiche.close': 'Close',
+  'fiche.edit': 'Edit',
+  'fiche.editError': 'Could not save the changes. Please try again.',
 
   'data.title': 'Source data — {rows} rows × {cols} columns',
 

@@ -206,6 +206,11 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .fiche-modal .fiche-flag { height: 38px; }
 .fiche-modal .fiche-region { width: 78px; height: 54px; }
 .fiche-modal .fiche-fact { font-size: .9rem; }
+.fiche-edit-toggle { display: block; margin: 0 0 1.2rem; }
+.fiche-edit-form { display: grid; gap: .9rem; }
+.fiche-edit-form label { display: grid; gap: .35rem; color: var(--text-soft); font-size: .85rem; }
+.fiche-edit-form input { width: 100%; background: var(--surface-solid); color: var(--text); border: 1px solid var(--border-input); border-radius: .45rem; padding: .6rem .7rem; }
+.fiche-edit-actions { display: flex; gap: .6rem; justify-content: flex-end; }
 .pie-chart { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.2rem; display: grid; justify-items: center; gap: .8rem; }
 .pie-chart svg { width: 140px; height: 140px; }
 .pie-chart h3 { text-align: center; margin: 0 0 .6rem; }

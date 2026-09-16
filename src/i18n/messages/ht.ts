@@ -205,6 +205,8 @@ export const ht: Record<MessageKey, string> = {
   'fiche.regionLabel': 'Pozisyon nan Karayib la: {name} (pase sourit la pou agrandi)',
   'fiche.modalLabel': 'Fich: {name}',
   'fiche.close': 'Fèmen',
+  'fiche.edit': 'Modifye',
+  'fiche.editError': 'Pa ka anrejistre chanjman yo. Eseye ankò.',
 
   'data.title': 'Done sous — {rows} liy × {cols} kolòn',
 

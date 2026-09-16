@@ -11,9 +11,10 @@ const COLUMNS = [
   'regime_politique', 'organisations', 'religions', 'drapeau',
 ]
 
-/** Version éditable (via l'éditeur de table Supabase) du dataset embarqué `caribbean.csv` — mêmes
- *  lignes/colonnes, en base plutôt que dans le code. `null` si indisponible (hors-ligne, RLS…) :
- *  l'appli reste alors sur le CSV embarqué, jamais bloquée par ce fetch. */
+/** Version éditable (dashboard Supabase, ou depuis l'appli pour les admins — cf. updateCaribbeanRow)
+ *  du dataset embarqué `caribbean.csv` — mêmes lignes/colonnes, en base plutôt que dans le code.
+ *  `null` si indisponible (hors-ligne, RLS…) : l'appli reste alors sur le CSV embarqué, jamais
+ *  bloquée par ce fetch. */
 export async function fetchCaribbeanDataset(): Promise<Row[] | null> {
   const { data, error } = await supabase
     .from('quiz_forge_caribbean_dataset')
@@ -21,4 +22,15 @@ export async function fetchCaribbeanDataset(): Promise<Row[] | null> {
     .order('row_order', { ascending: true })
   if (error || !data?.length) return null
   return data as unknown as Row[]
+}
+
+/** Met à jour les champs d'un territoire existant (`pays` = clé, non modifiable ici — renommer un
+ *  territoire sortirait du périmètre : shapes/region/i18n/aliases restent indexés par ce nom exact).
+ *  Réservé aux admins côté RLS (policy UPDATE sur quiz_forge_caribbean_dataset). Un refus RLS ne
+ *  remonte pas d'erreur PostgREST (juste 0 ligne affectée) : on le détecte nous-mêmes via `.select()`
+ *  pour ne jamais rapporter un succès silencieusement faux à l'appelant. */
+export async function updateCaribbeanRow(pays: string, patch: Partial<Row>): Promise<void> {
+  const { data, error } = await supabase.from('quiz_forge_caribbean_dataset').update(patch).eq('pays', pays).select('pays')
+  if (error) throw error
+  if (!data?.length) throw new Error('Mise à jour refusée (droits insuffisants ou territoire introuvable).')
 }
