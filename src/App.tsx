@@ -22,7 +22,7 @@ import { applyLocale, DEFAULT_LOCALE, resolveLocale, type Locale } from './i18n/
 import type { DataI18n } from './i18n/data'
 import { buildQuestionResultPayloads, buildQuizResultPayload, saveQuestionResults, saveQuizResult } from './utils/quizHistory'
 import { fetchProfile, saveProfile } from './utils/profile'
-import { fetchCaribbeanDataset } from './utils/caribbeanDataset'
+import { applyCaribbeanSchemaConfig, fetchCaribbeanDataset, fetchCaribbeanSchemaConfig, toCaribbeanSchemaConfig, updateCaribbeanSchemaConfig, type CaribbeanSchemaConfig } from './utils/caribbeanDataset'
 import { checkIsAdmin } from './utils/adminAccess'
 import { applyTheme } from './utils/theme'
 import { parseQuiz } from './utils/quizValidation'
@@ -94,10 +94,11 @@ function safeGenerate(dataset: Dataset, seed: string, locale: Locale = DEFAULT_L
  *  fichier embarqué (démarrage) ou de Supabase (bascule silencieuse une fois le fetch arrivé, voir
  *  `caribbeanDataset.ts`) : shapes/i18n/aliases/region restent du code statique, indexés par le nom
  *  exact des territoires et certaines valeurs de cellules (cf. plan discuté avec l'utilisateur). */
-function buildCaribbeanDataset(rows: Row[]): Dataset {
+function buildCaribbeanDataset(rows: Row[], schemaConfig: CaribbeanSchemaConfig | null = null): Dataset {
+  const baseSchema = { ...inferSchema(rows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' }
   return {
     rows,
-    schema: { ...inferSchema(rows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' },
+    schema: applyCaribbeanSchemaConfig(baseSchema, schemaConfig),
     shapes: caribbeanShapes,
     aliases: caribbeanAliases,
     region: caribbeanRegion,
@@ -132,8 +133,12 @@ export default function App({ session }: { session: Session | null }) {
   const userId = session?.user.id ?? null
   const [profile, setProfile] = useState<Profile | null>(null)
   useEffect(() => { fetchProfile(userId).then(setProfile).catch(() => {}) }, [userId])
-  const [dbRows, setDbRows] = useState<Row[] | null>(null)
-  useEffect(() => { fetchCaribbeanDataset().then(setDbRows).catch(() => {}) }, [])
+  const [dbData, setDbData] = useState<{ rows: Row[]; schemaConfig: CaribbeanSchemaConfig | null } | null>(null)
+  useEffect(() => {
+    Promise.all([fetchCaribbeanDataset(), fetchCaribbeanSchemaConfig()])
+      .then(([rows, schemaConfig]) => { if (rows?.length) setDbData({ rows, schemaConfig }) })
+      .catch(() => {})
+  }, [])
   const [isAdmin, setIsAdmin] = useState(false)
   useEffect(() => {
     if (!userId) { setIsAdmin(false); return }
@@ -143,12 +148,12 @@ export default function App({ session }: { session: Session | null }) {
   useEffect(() => { applyLocale(locale) }, [locale])
   return (
     <LocaleProvider locale={locale}>
-      <AppInner profile={profile} onProfileChange={setProfile} session={session} dbRows={dbRows} isAdmin={isAdmin} />
+      <AppInner profile={profile} onProfileChange={setProfile} session={session} dbData={dbData} isAdmin={isAdmin} />
     </LocaleProvider>
   )
 }
 
-function AppInner({ profile, onProfileChange, session, dbRows, isAdmin }: { profile: Profile | null; onProfileChange: (p: Profile) => void; session: Session | null; dbRows: Row[] | null; isAdmin: boolean }) {
+function AppInner({ profile, onProfileChange, session, dbData, isAdmin }: { profile: Profile | null; onProfileChange: (p: Profile) => void; session: Session | null; dbData: { rows: Row[]; schemaConfig: CaribbeanSchemaConfig | null } | null; isAdmin: boolean }) {
   const t = useT()
   const locale = useLocale()
   const tRef = useRef(t)
@@ -234,12 +239,12 @@ function AppInner({ profile, onProfileChange, session, dbRows, isAdmin }: { prof
   // dès qu'il arrive — seulement si l'utilisateur n'a pas depuis importé son propre CSV (auquel cas
   // `dataset` n'est plus le dataset Caraïbes éditable, `editable` n'y est pas défini).
   useEffect(() => {
-    if (dbRows?.length && dataset?.editable) {
-      const nextDataset = buildCaribbeanDataset(dbRows)
+    if (dbData?.rows.length && dataset?.editable) {
+      const nextDataset = buildCaribbeanDataset(dbData.rows, dbData.schemaConfig)
       setDataset(nextDataset)
       applyGenerated(nextDataset, genRef.current.seed)
     }
-  }, [dbRows]) // volontairement seul en deps : ne doit se déclencher qu'à l'arrivée de dbRows
+  }, [dbData]) // volontairement seul en deps : ne doit se déclencher qu'à l'arrivée de dbData
 
   // Un admin a corrigé un champ depuis une fiche (FicheModal) : on met à jour la ligne concernée
   // dans le dataset en mémoire et on régénère le quiz courant (même seed), sans nouvel aller-retour
@@ -273,6 +278,9 @@ function AppInner({ profile, onProfileChange, session, dbRows, isAdmin }: { prof
     setDataset(nextDataset)
     applyGenerated(nextDataset, seed)
     navigate('start')
+    // Admin sur le dataset Caraïbes : les réglages du panneau (colonnes incluses/séparateur, nom,
+    // titre) deviennent le défaut partagé, pas seulement ce tirage — best-effort, jamais bloquant.
+    if (dataset.editable && isAdmin) updateCaribbeanSchemaConfig(toCaribbeanSchemaConfig(schema)).catch(() => {})
   }
 
   // Reconstruit le pool de questions depuis les mêmes données, avec un nouveau seed :
