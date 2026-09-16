@@ -119,6 +119,10 @@ export const ht: Record<MessageKey, string> = {
   'history.replayMistakes': 'Repran erè m yo',
   'history.missedRatio': 'Rate {wrong} sou {attempts}',
   'history.pointsPair': '{earned} / {total} pwen',
+  'history.leaderboard': 'Klasman',
+  'history.leaderboardEmpty': 'Pèsonn poko jwe mòd sa a sou kiz sa a.',
+  'leaderboard.correctCount.one': '{n} bon repons',
+  'leaderboard.correctCount.other': '{n} bon repons',
 
   'profile.title': 'Pwofil',
   'profile.pseudo': 'Ti non',

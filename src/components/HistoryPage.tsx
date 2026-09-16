@@ -5,11 +5,12 @@ import { useLocale, useT } from '../i18n'
 import { bucketsToRadarPoints, computeMissedQuestions, computeRecords, fetchQuestionResults, fetchQuizHistory, sumBuckets } from '../utils/quizHistory'
 import { formatDuration } from '../utils/time'
 import { HeatmapChart } from './HeatmapChart'
+import { LeaderboardPanel } from './LeaderboardPanel'
 import { QUESTION_TYPES, difficultyLabel, typeLabel, type GameMode } from './QuizPage'
 import { RadarChart } from './RadarChart'
 import { ScoreChart } from './ScoreChart'
 
-const MODE_ICONS: Record<GameMode, string> = { classic: '🎯', timeAttack: '⏱️', noMistake: '🔥' }
+export const MODE_ICONS: Record<GameMode, string> = { classic: '🎯', timeAttack: '⏱️', noMistake: '🔥' }
 
 export function HistoryPage({ onBack, quiz, historyKey, userId, onReplayMissed }: { onBack: () => void; quiz: Quiz; historyKey: string; userId?: string | null; onReplayMissed: (questions: Question[]) => void }) {
   const t = useT()
@@ -62,6 +63,7 @@ export function HistoryPage({ onBack, quiz, historyKey, userId, onReplayMissed }
         {quizTitles.map((title) => <option key={title} value={title}>{title === historyKey ? quiz.metadata.title : title}</option>)}
       </select>
     </label>}
+    {rows && <LeaderboardPanel quizTitle={activeQuiz || historyKey} userId={userId} />}
     {records && records.gamesPlayed > 0 && <>
       <div className="records-grid">
         <div className="record-tile"><span className="record-value">{records.gamesPlayed}</span><span className="record-label">{t('history.gamesPlayed')}</span></div>

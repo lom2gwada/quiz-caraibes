@@ -118,6 +118,10 @@ export const es: Record<MessageKey, string> = {
   'history.replayMistakes': 'Repetir mis errores',
   'history.missedRatio': 'Fallada {wrong} de {attempts}',
   'history.pointsPair': '{earned} / {total} pts',
+  'history.leaderboard': 'Clasificación',
+  'history.leaderboardEmpty': 'Nadie ha jugado todavía este modo en este quiz.',
+  'leaderboard.correctCount.one': '{n} respuesta correcta',
+  'leaderboard.correctCount.other': '{n} respuestas correctas',
 
   'profile.title': 'Perfil',
   'profile.pseudo': 'Apodo',

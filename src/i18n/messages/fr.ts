@@ -127,6 +127,10 @@ export const fr = {
   'history.replayMistakes': 'Reprendre mes erreurs',
   'history.missedRatio': 'Ratée {wrong} fois sur {attempts}',
   'history.pointsPair': '{earned} / {total} pts',
+  'history.leaderboard': 'Classement',
+  'history.leaderboardEmpty': "Personne n'a encore joué ce mode sur ce quiz.",
+  'leaderboard.correctCount.one': '{n} bonne réponse',
+  'leaderboard.correctCount.other': '{n} bonnes réponses',
 
   // — profil —
   'profile.title': 'Profil',

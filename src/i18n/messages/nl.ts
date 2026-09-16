@@ -118,6 +118,10 @@ export const nl: Record<MessageKey, string> = {
   'history.replayMistakes': 'Mijn fouten opnieuw',
   'history.missedRatio': '{wrong} van {attempts} keer fout',
   'history.pointsPair': '{earned} / {total} ptn',
+  'history.leaderboard': 'Klassement',
+  'history.leaderboardEmpty': 'Nog niemand heeft deze modus op deze quiz gespeeld.',
+  'leaderboard.correctCount.one': '{n} goed antwoord',
+  'leaderboard.correctCount.other': '{n} goede antwoorden',
 
   'profile.title': 'Profiel',
   'profile.pseudo': 'Bijnaam',

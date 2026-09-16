@@ -117,6 +117,10 @@ export const en: Record<MessageKey, string> = {
   'history.replayMistakes': 'Retry my mistakes',
   'history.missedRatio': 'Missed {wrong} of {attempts}',
   'history.pointsPair': '{earned} / {total} pts',
+  'history.leaderboard': 'Leaderboard',
+  'history.leaderboardEmpty': "Nobody has played this mode on this quiz yet.",
+  'leaderboard.correctCount.one': '{n} correct answer',
+  'leaderboard.correctCount.other': '{n} correct answers',
 
   'profile.title': 'Profile',
   'profile.pseudo': 'Nickname',
