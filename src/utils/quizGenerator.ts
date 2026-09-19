@@ -113,6 +113,9 @@ const UNIT_SUFFIXES: Array<[RegExp, string]> = [
   [/_mds_usd$/i, 'Mds $'],
   [/_km2$/i, 'km²'],
   [/_deg$/i, '°'],
+  [/_g_cm3$/i, 'g/cm³'],
+  [/_c$/i, '°C'],
+  [/_u$/i, 'u'],
   [/_m$/i, 'm'],
   [/_pct$/i, '%'],
   [/_pourcent$/i, '%'],
@@ -152,7 +155,13 @@ export function inferSchema(rows: Row[], opts?: { subjectColumn?: string }): Gen
     const values = rows.map((r) => r[header] ?? '')
     const filled = values.filter(hasValue)
     const { label, unit } = labelOf(header)
-    const kind: ColumnSpec['kind'] = filled.length > 0 && filled.every(isNumeric) ? 'number' : 'string'
+    const allNumeric = filled.length > 0 && filled.every(isNumeric)
+    // Entiers très répétés et peu nombreux (groupe 1-18, période 1-7…) : des catégories, pas des
+    // quantités — sinon estimations et « faux » chiffrés absurdes (« période 2,5 »).
+    const distinctValues = new Set(filled.map((v) => String(asNumber(v)))).size
+    const isCode = allNumeric && filled.every((v) => Number.isInteger(asNumber(v))) && distinctValues <= 18 && distinctValues * 3 <= filled.length &&
+      !filled.every((v) => asNumber(v) >= 1000 && asNumber(v) <= 2100)
+    const kind: ColumnSpec['kind'] = allNumeric && !isCode ? 'number' : 'string'
     const isYear =
       kind === 'number' &&
       filled.every((v) => Number.isInteger(asNumber(v)) && asNumber(v) >= 1000 && asNumber(v) <= 2100)
@@ -450,7 +459,7 @@ export function generateQuiz(
         const target = asNumber(row[col])
         let min: number, max: number, step: number, tolerance: number
         if (spec.isYear) {
-          min = target - 40; max = Math.min(2000, target + 40); step = 1; tolerance = 4
+          min = target - 40; max = Math.min(2030, target + 40); step = 1; tolerance = 4
         } else {
           step = niceStep(target * 2)
           // Domaine négatif (ex. longitude) : mêmes proportions, en miroir — la borne côté zéro

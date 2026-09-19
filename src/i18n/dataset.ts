@@ -38,10 +38,12 @@ export function makeDatasetI18n(i18n: DataI18n | undefined, locale: Locale = DEF
   const unit = (rawUnit: string): string => i18n?.units?.[rawUnit]?.[locale] ?? rawUnit
   const article = (name: string, csvArticle?: string): string =>
     i18n?.articles[name]?.[locale] ?? (locale === DEFAULT_LOCALE ? (csvArticle ?? '') : '')
+  // Nom commun en milieu de phrase : minuscule (« de l'hydrogène ») ; nom propre : tel quel.
+  const inSentence = (name: string): string => (i18n?.commonNouns ? value(name).toLocaleLowerCase(locale) : value(name))
   const subject = (name: string, csvArticle?: string): string => {
     const art = article(name, csvArticle)
-    return art ? `${art} ${value(name)}` : value(name)
+    return art ? `${art} ${inSentence(name)}` : inSentence(name)
   }
-  const ofSubject = (name: string, csvArticle?: string): string => grammar.of(value(name), article(name, csvArticle))
+  const ofSubject = (name: string, csvArticle?: string): string => grammar.of(inSentence(name), article(name, csvArticle))
   return { locale, value, label, unit, article, subject, ofSubject }
 }

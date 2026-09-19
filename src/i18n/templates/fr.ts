@@ -20,7 +20,7 @@ export const fr = {
   'prompt.estimate': 'Estimez : {label} {ofSubject}.',
   'prompt.estimateUnit': 'Estimez : {label} {ofSubject} (en {unit}).',
   'prompt.numericValueUnit': '{Label} {ofSubject} (en {unit}) ?',
-  'prompt.ordering': 'Classez ces {nouns} par {label} {direction}.',
+  'prompt.ordering': 'Classez ces {nouns} par {label} (ordre {direction}).',
   'prompt.matching': 'Associez chaque {noun} à : {label}.',
   'prompt.imageYear': 'Ce {imageLabel} représente un {noun}. En quelle année : {label} ?',
   'prompt.silhouette': 'Quel {noun} a cette silhouette ?',

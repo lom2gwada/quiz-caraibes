@@ -20,6 +20,6 @@ export const fr: Grammar = {
   list: (items) =>
     items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}`,
   plural: (noun) => `${noun}s`,
-  direction: (dir) => (dir === 'asc' ? 'croissante' : 'décroissante'),
+  direction: (dir) => (dir === 'asc' ? 'croissant' : 'décroissant'),
   cap,
 }
