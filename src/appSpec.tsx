@@ -52,7 +52,7 @@ const speech: SpeechTemplates = {
     'Son président est {president}.',
     'Son Premier ministre est {premier_ministre}.',
     'Organisations : {organisations}.',
-    'Religions principales : {religions:2}.',
+    'Principaux groupes religieux : {religions:2}.',
   ],
   en: [
     '{Name}, a Caribbean territory.',
@@ -69,7 +69,7 @@ const speech: SpeechTemplates = {
     'Its president is {president}.',
     'Its prime minister is {premier_ministre}.',
     'Organisations: {organisations}.',
-    'The main religions are {religions:2}.',
+    'Largest religious groups: {religions:2}.',
   ],
   es: [
     '{Name}, un territorio del Caribe.',
@@ -86,7 +86,7 @@ const speech: SpeechTemplates = {
     'Su presidente es {president}.',
     'Su primer ministro es {premier_ministre}.',
     'Organizaciones: {organisations}.',
-    'Las religiones principales son {religions:2}.',
+    'Los grupos religiosos más numerosos son {religions:2}.',
   ],
   nl: [
     '{Name}, een gebied in het Caribisch gebied.',
@@ -103,7 +103,7 @@ const speech: SpeechTemplates = {
     'De president is {president}.',
     'De premier is {premier_ministre}.',
     'Organisaties: {organisations}.',
-    'De belangrijkste religies zijn {religions:2}.',
+    'De grootste religieuze groepen zijn {religions:2}.',
   ],
   // Première version, à faire relire par un locuteur natif (comme les gabarits de quiz en créole). Pas de voix
   // créole : la voix française lit ce texte, à peu près comme le créole s'écrit (orthographe IPN, plutôt phonétique).
@@ -122,7 +122,7 @@ const speech: SpeechTemplates = {
     'Prezidan li se {president}.',
     'Premye minis li se {premier_ministre}.',
     'Òganizasyon: {organisations}.',
-    'Relijyon prensipal yo se {religions:2}.',
+    'Pi gwo gwoup relijye yo se {religions:2}.',
   ],
 }
 
