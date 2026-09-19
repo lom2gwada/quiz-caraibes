@@ -16,7 +16,7 @@ function commitHash(): string {
 
 export default defineConfig({
   plugins: [react()],
-  base: '/quiz-forge/',
+  base: '/quiz-caraibes/',
   // Le moteur commun vit dans le sous-module git `engine/` (dépôt quiz-engine) : `@engine` = son index,
   // `@engine/...` = ses sources.
   resolve: {

@@ -1,6 +1,6 @@
 # Quiz Caraïbes
 
-> Anciennement « Quiz Forge » : le dépôt, l'adresse GitHub Pages, le préfixe des tables Supabase et les clés de stockage gardent le nom `quiz-forge`.
+> Anciennement « Quiz Forge » (dépôt et adresse `quiz-forge` jusqu'au 2026-09-19). Le préfixe des tables Supabase (`quiz_forge_*`) et les clés de stockage (`quiz-forge:*`) gardent l'ancien nom : ils ne se voient pas et les renommer ferait perdre des données.
 
 Application web de quiz construite avec React, TypeScript et Vite, dérivée d'[oliver-quiz](https://github.com/lom2gwada/oliver-quiz). Elle partage le même moteur de jeu (types de questions, filtres, tirage aléatoire, historique) mais se concentre sur la **génération automatique de quiz** à partir d'un tableau de données.
 
