@@ -1,11 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import type { GenSchema, Row } from '../utils/quizGenerator'
-import type { DataI18n } from '../i18n/data'
+import { makeDatasetI18n, useLocale, useT } from '@engine'
+import type { DataI18n, GenSchema, Row } from '@engine'
+import { formatNumber } from '@engine/utils/number'
 import type { RegionShape } from '../data/region'
-import { makeDatasetI18n } from '../i18n/dataset'
-import { useLocale, useT } from '../i18n'
-import { formatNumber } from '../utils/number'
 import { lonLatToView, viewToLonLat } from '../utils/regionProjection'
 
 interface RegionOverviewPageProps {

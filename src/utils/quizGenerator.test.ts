@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import caribbeanCsv from '../data/caribbean.csv?raw'
 import { caribbeanI18n } from '../data/caribbean.i18n'
-import { parseQuiz } from './quizValidation'
-import { generateQuiz, inferSchema, parseCsv, type Row } from './quizGenerator'
+import { parseQuiz } from '@engine/utils/quizValidation'
+import { generateQuiz, inferSchema, parseCsv, type Row } from '@engine'
 
 const caribbeanRows = parseCsv(caribbeanCsv)
 

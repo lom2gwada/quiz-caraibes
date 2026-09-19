@@ -6,15 +6,25 @@ L'idée : au lieu d'écrire chaque question à la main, on charge un CSV (une li
 
 ## Fonctionnalités
 
-- Génération de quiz **dans le navigateur** à partir d'un CSV : [`src/utils/quizGenerator.ts`](src/utils/quizGenerator.ts) (`parseCsv` → `inferSchema` → `generateQuiz`)
-- Panneau de réglage avant génération (colonne « sujet », colonnes à ignorer, séparateur multivaleur, seed) : [`src/components/GeneratorPanel.tsx`](src/components/GeneratorPanel.tsx)
-- Sept types de questions jouables : QCM, texte libre, ordonnancement, vrai/faux, texte à trous, association, estimation numérique (`src/components`)
+- Génération de quiz **dans le navigateur** à partir d'un CSV : [`engine/src/utils/quizGenerator.ts`](engine/src/utils/quizGenerator.ts) (`parseCsv` → `inferSchema` → `generateQuiz`)
+- Panneau de réglage avant génération (colonne « sujet », colonnes à ignorer, séparateur multivaleur, seed) : [`src/components/GeneratorPanel.tsx`](engine/src/components/GeneratorPanel.tsx)
+- Sept types de questions jouables : QCM, texte libre, ordonnancement, vrai/faux, texte à trous, association, estimation numérique (`engine/src/components`)
 - Filtrage des questions par catégorie (une par colonne du jeu de données) et par difficulté ; tirage aléatoire d'un nombre de questions choisi
-- Import d'un quiz au format JSON, validé avant utilisation (`src/utils/quizValidation.ts`)
+- Import d'un quiz au format JSON, validé avant utilisation (`engine/src/utils/quizValidation.ts`)
 - Historique des parties et profil (pseudo / avatar / thème) stockés localement (`localStorage`), sans backend
 - Jeu de données embarqué : [`src/data/caribbean.csv`](src/data/caribbean.csv) (29 pays et territoires du bassin caribéen), généré à l'ouverture
 - Questions visuelles : drapeaux (URLs Wikimedia) et **silhouettes** de territoires ([`src/data/shapes.ts`](src/data/shapes.ts), contours Natural Earth générés par [`scripts/build-shapes.mjs`](scripts/build-shapes.mjs))
 - Sur chaque fiche, petite **carte de positionnement** dans les Caraïbes ([`src/data/region.ts`](src/data/region.ts), même source Natural Earth mais projection partagée entre tous les territoires, générée par [`scripts/build-region.mjs`](scripts/build-region.mjs)) ; les micro-territoires trop petits pour rester lisibles n'affichent qu'un point d'accent
+
+## Architecture
+
+Cette appli est un **jeu de données + des vues** posés sur le moteur commun [`quiz-engine`](https://github.com/lom2gwada/quiz-engine), inclus comme sous-module git dans `engine/` (génération de quiz, jeu, historique, classement, connexion, liens invités, édition admin, i18n…).
+
+- `src/appConfig.ts` : identité de l'appli pour le moteur (préfixe de stockage `quiz-forge`, préfixe des tables Supabase `quiz_forge_`, libellés propres).
+- `src/appSpec.tsx` : jeu de données embarqué, construction du `Dataset` (traductions, silhouettes, carte de la région, alias de réponses) et accès à la version en base.
+- `engine/` : à ne modifier que pour ce qui doit changer dans **les deux** applis (voir son README).
+
+Après un `git clone`, récupérer le moteur avec `git submodule update --init` (ou cloner avec `--recurse-submodules`). Le workflow de déploiement le fait déjà.
 
 ## Prérequis
 
@@ -49,7 +59,7 @@ Une cellule vide n'alimente aucune question ; les classements ne tirent qu'une l
 
 ## Format d'un quiz JSON
 
-Un fichier de quiz importé doit respecter le contrat de [`src/types/quiz.ts`](src/types/quiz.ts), validé par [`parseQuiz`](src/utils/quizValidation.ts) — c'est aussi la sortie de `generateQuiz`.
+Un fichier de quiz importé doit respecter le contrat de [`engine/src/types/quiz.ts`](engine/src/types/quiz.ts), validé par [`parseQuiz`](engine/src/utils/quizValidation.ts) — c'est aussi la sortie de `generateQuiz`.
 
 ## Perspectives
 

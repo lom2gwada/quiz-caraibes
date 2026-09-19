@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import caribbeanCsv from './caribbean.csv?raw'
-import { parseCsv } from '../utils/quizGenerator'
+import { parseCsv } from '@engine'
 import { region, REGION_VIEWBOX } from './region'
 
 const territoryNames = parseCsv(caribbeanCsv).map((row) => row.pays)

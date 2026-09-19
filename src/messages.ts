@@ -1,0 +1,48 @@
+/** Libellés propres à l'appli, ajoutés ou substitués à ceux du moteur (`EngineConfig.messages`). */
+export const messages: Record<string, Record<string, string>> = {
+  fr: {
+    'nav.map': 'Carte',
+    'profile.themeLagon': '🌙 Lagon',
+    'profile.themeCarte': '🧭 Carte marine',
+    'regionOverview.title': 'Carte',
+    'regionOverview.hint': 'Survolez un point pour voir le territoire et sa capitale ; les coordonnées suivent le curseur.',
+    'regionOverview.coordsHint': 'Survolez la carte…',
+    'fiche.regionLabel': 'Position dans les Caraïbes : {name} (survoler pour agrandir)',
+  },
+  en: {
+    'nav.map': 'Map',
+    'profile.themeLagon': '🌙 Lagoon',
+    'profile.themeCarte': '🧭 Nautical chart',
+    'regionOverview.title': 'Map',
+    'regionOverview.hint': 'Hover a point to see the territory and its capital — the coordinates follow the cursor.',
+    'regionOverview.coordsHint': 'Hover the map…',
+    'fiche.regionLabel': 'Position in the Caribbean: {name} (hover to enlarge)',
+  },
+  es: {
+    'nav.map': 'Mapa',
+    'profile.themeLagon': '🌙 Laguna',
+    'profile.themeCarte': '🧭 Carta náutica',
+    'regionOverview.title': 'Mapa',
+    'regionOverview.hint': 'Pasa el cursor por un punto para ver el territorio y su capital — las coordenadas siguen el cursor.',
+    'regionOverview.coordsHint': 'Pasa el cursor por el mapa…',
+    'fiche.regionLabel': 'Posición en el Caribe: {name} (pasa el ratón para ampliar)',
+  },
+  nl: {
+    'nav.map': 'Kaart',
+    'profile.themeLagon': '🌙 Lagune',
+    'profile.themeCarte': '🧭 Zeekaart',
+    'regionOverview.title': 'Kaart',
+    'regionOverview.hint': 'Beweeg over een punt om het gebied en zijn hoofdstad te zien — de coördinaten volgen de cursor.',
+    'regionOverview.coordsHint': 'Beweeg over de kaart…',
+    'fiche.regionLabel': 'Ligging in het Caribisch gebied: {name} (beweeg de muis om te vergroten)',
+  },
+  ht: {
+    'nav.map': 'Kat',
+    'profile.themeLagon': '🌙 Lagon',
+    'profile.themeCarte': '🧭 Kat maren',
+    'regionOverview.title': 'Kat',
+    'regionOverview.hint': 'Pase sou yon pwen pou wè teritwa a ak kapital li — kowòdone yo swiv kisè a.',
+    'regionOverview.coordsHint': 'Pase sou kat la…',
+    'fiche.regionLabel': 'Pozisyon nan Karayib la: {name} (pase sourit la pou agrandi)',
+  },
+}

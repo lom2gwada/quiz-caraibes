@@ -1,0 +1,23 @@
+/* Vue carte, silhouette régionale et fond marin — spécifiques à quiz-forge (le moteur n'en sait rien). */
+.hover-preview-pop .region-map { width: 220px; height: 151px; color: var(--ink); }
+.fiche-region-wrap { color: var(--accent); }
+.region-map { position: relative; display: block; }
+.region-map svg { display: block; width: 100%; height: 100%; }
+.region-land path { fill: var(--surface-alt); }
+.region-land .region-hl { fill: currentColor; }
+.region-dot { position: absolute; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 1px var(--surface-solid); }
+.region-dot-solo { width: 6px; height: 6px; margin: -3px 0 0 -3px; }
+.fiche-region { width: 58px; height: 40px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface-solid); }
+.region-title { position: absolute; top: 3px; left: 4px; right: 4px; text-align: center; font-size: .64rem; font-weight: 700; color: var(--ink); text-shadow: 0 1px 3px var(--surface-solid), 0 1px 3px var(--surface-solid); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.region-capital { position: absolute; transform: translateX(-50%); font-size: .6rem; font-weight: 600; color: var(--ink); text-shadow: 0 1px 3px var(--surface-solid), 0 1px 3px var(--surface-solid); white-space: nowrap; pointer-events: none; }
+.region-capital-below { margin-top: 5px; }
+.region-capital-above { transform: translate(-50%, calc(-100% - 5px)); }
+.region-overview-map { position: relative; margin-top: 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: var(--shadow); overflow: hidden; }
+.region-overview-map svg { display: block; width: 100%; height: auto; cursor: crosshair; color: var(--accent); }
+.region-overview-map svg.is-clickable { cursor: pointer; }
+.region-overview-coords { position: absolute; top: .8rem; left: .8rem; z-index: 1; padding: .3rem .6rem; background: var(--surface-solid); border: 1px solid var(--border); border-radius: .4rem; font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text-soft); pointer-events: none; }
+.region-overview-dot { fill: var(--text-muted); transition: fill .1s ease, r .1s ease; }
+.region-overview-dot { r: 1.4px; }
+.region-overview-dot.is-active { fill: var(--accent); r: 2.6px; }
+.region-overview-title { position: absolute; transform: translate(-50%, calc(-100% - 8px)); font-size: .95rem; font-weight: 800; color: var(--ink); text-shadow: 0 1px 4px var(--surface-solid), 0 1px 4px var(--surface-solid); white-space: nowrap; pointer-events: none; }
+.fiche-modal .fiche-region { width: 78px; height: 54px; }

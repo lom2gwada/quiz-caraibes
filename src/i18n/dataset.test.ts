@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { caribbeanI18n } from '../data/caribbean.i18n'
-import { makeDatasetI18n, splitAnnotation } from './dataset'
+import { makeDatasetI18n } from '@engine'
+import { splitAnnotation } from '@engine/i18n/dataset'
 
 describe('makeDatasetI18n', () => {
   it('falls back to the raw value when no sidecar / no locale entry', () => {

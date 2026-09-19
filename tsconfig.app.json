@@ -14,7 +14,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": { "@engine": ["./engine/src/index.ts"], "@engine/*": ["./engine/src/*"] }
   },
-  "include": ["src"]
+  "include": ["src", "engine/src"]
 }
