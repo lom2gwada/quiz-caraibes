@@ -4,6 +4,6 @@ import { messages } from './messages'
 export const appConfig: EngineConfig = {
   appId: 'quiz-forge',
   tablePrefix: 'quiz_forge',
-  appName: 'Quiz Forge',
+  appName: 'Quiz Caraïbes',
   messages,
 }

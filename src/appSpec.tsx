@@ -79,7 +79,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
 
 export const appSpec: QuizAppSpec = {
   seed: 'caribbean',
-  fallbackTitle: 'Quiz Forge',
+  fallbackTitle: 'Quiz Caraïbes',
   bundledCsv: caribbeanCsv,
   buildDataset,
   remote,
