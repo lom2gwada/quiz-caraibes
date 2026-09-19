@@ -33,8 +33,8 @@ const ficheDecor: FicheDecorator = (row, { canonical, name }) => ({
 })
 
 /** Ce que le bouton « Écouter » d'une fiche déclame (syntaxe : voir `SpeechTemplates` dans le moteur). Une phrase saute
- *  quand la donnée manque (territoire sans président, sans indépendance…). Français et anglais ; les autres langues
- *  retombent sur le français. Les possessifs s'accordent avec le nom qu'ils qualifient (« sa capitale », « son PIB »),
+ *  quand la donnée manque (territoire sans président, sans indépendance…). Français, anglais, espagnol et néerlandais ; le
+ *  créole haïtien (pas de voix disponible) retombe sur le français. Les possessifs s'accordent avec le nom qu'ils qualifient (« sa capitale », « son PIB »),
  *  d'où l'absence de pronom sujet, dont le genre dépendrait du territoire. */
 const speech: SpeechTemplates = {
   fr: [
@@ -70,6 +70,40 @@ const speech: SpeechTemplates = {
     'Its prime minister is {premier_ministre}.',
     'Organisations: {organisations}.',
     'The main religions are {religions:2}.',
+  ],
+  es: [
+    '{Name}, un territorio del Caribe.',
+    'Su capital es {capitale}.',
+    'Su régimen político: {regime_politique}.',
+    'Su población es de unos {population} habitantes.',
+    'Su superficie es de {superficie_km2} kilómetros cuadrados.',
+    'Su densidad es de {densite_hab_km2} habitantes por kilómetro cuadrado.',
+    'Su PIB es de unos {pib_mds_usd} mil millones de dólares.',
+    'Su punto más alto es {point_culminant}[, a {altitude_m} metros de altitud].',
+    'Su moneda es {monnaie}.',
+    'Allí se habla {langues}.',
+    'Obtuvo la independencia en {independance}.',
+    'Su presidente es {president}.',
+    'Su primer ministro es {premier_ministre}.',
+    'Organizaciones: {organisations}.',
+    'Las religiones principales son {religions:2}.',
+  ],
+  nl: [
+    '{Name}, een gebied in het Caribisch gebied.',
+    'De hoofdstad is {capitale}.',
+    'Staatsvorm: {regime_politique}.',
+    'Er wonen ongeveer {population} mensen.',
+    'De oppervlakte is {superficie_km2} vierkante kilometer.',
+    'De bevolkingsdichtheid is {densite_hab_km2} inwoners per vierkante kilometer.',
+    'Het bbp bedraagt ongeveer {pib_mds_usd} miljard dollar.',
+    'Het hoogste punt is {point_culminant}[, op {altitude_m} meter hoogte].',
+    'De munteenheid is {monnaie}.',
+    'Men spreekt er {langues}.',
+    'De onafhankelijkheid dateert van {independance}.',
+    'De president is {president}.',
+    'De premier is {premier_ministre}.',
+    'Organisaties: {organisations}.',
+    'De belangrijkste religies zijn {religions:2}.',
   ],
 }
 
