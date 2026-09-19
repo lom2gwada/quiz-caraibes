@@ -34,7 +34,7 @@ const ficheDecor: FicheDecorator = (row, { canonical, name }) => ({
 
 /** Ce que le bouton « Écouter » d'une fiche déclame (syntaxe : voir `SpeechTemplates` dans le moteur). Une phrase saute
  *  quand la donnée manque (territoire sans président, sans indépendance…). Français, anglais, espagnol et néerlandais ; le
- *  créole haïtien (pas de voix disponible) retombe sur le français. Les possessifs s'accordent avec le nom qu'ils qualifient (« sa capitale », « son PIB »),
+ *  créole haïtien (pas de voix créole : lu par la voix française). Les possessifs s'accordent avec le nom qu'ils qualifient (« sa capitale », « son PIB »),
  *  d'où l'absence de pronom sujet, dont le genre dépendrait du territoire. */
 const speech: SpeechTemplates = {
   fr: [
@@ -104,6 +104,25 @@ const speech: SpeechTemplates = {
     'De premier is {premier_ministre}.',
     'Organisaties: {organisations}.',
     'De belangrijkste religies zijn {religions:2}.',
+  ],
+  // Première version, à faire relire par un locuteur natif (comme les gabarits de quiz en créole). Pas de voix
+  // créole : la voix française lit ce texte, à peu près comme le créole s'écrit (orthographe IPN, plutôt phonétique).
+  ht: [
+    '{Name}, yon teritwa nan Karayib la.',
+    'Kapital li se {capitale}.',
+    'Rejim politik li: {regime_politique}.',
+    'Gen apeprè {population} moun ki rete la.',
+    'Sipèfisi li se {superficie_km2} kilomèt kare.',
+    'Dansite li se {densite_hab_km2} moun pou chak kilomèt kare.',
+    'PIB li se apeprè {pib_mds_usd} milya dola.',
+    'Pwen li ki pi wo a se {point_culminant}[, ki fè {altitude_m} mèt wotè].',
+    'Lajan li se {monnaie}.',
+    'Yo pale {langues} nan teritwa a.',
+    'Li te vin endepandan an {independance}.',
+    'Prezidan li se {president}.',
+    'Premye minis li se {premier_ministre}.',
+    'Òganizasyon: {organisations}.',
+    'Relijyon prensipal yo se {religions:2}.',
   ],
 }
 
