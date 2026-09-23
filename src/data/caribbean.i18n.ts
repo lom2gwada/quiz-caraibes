@@ -37,6 +37,9 @@ const values: DataI18n['values'] = {
   Colombie: { en: 'Colombia', es: 'Colombia', nl: 'Colombia', ht: 'Kolonbi' },
   Venezuela: { ht: 'Venezyela' },
   Mexique: { en: 'Mexico', es: 'México', nl: 'Mexico', ht: 'Meksik' },
+  'Îles Vierges britanniques': { en: 'British Virgin Islands', es: 'Islas Vírgenes Británicas', nl: 'Britse Maagdeneilanden', ht: 'Zile Vyèj Britanik yo' },
+  'Îles Vierges américaines': { en: 'United States Virgin Islands', es: 'Islas Vírgenes de los Estados Unidos', nl: 'Amerikaanse Maagdeneilanden', ht: 'Zile Vyèj Ameriken yo' },
+  'Îles Turques-et-Caïques': { en: 'Turks and Caicos Islands', es: 'Islas Turcas y Caicos', nl: 'Turks- en Caicoseilanden', ht: 'Zile Tik ak Kayik yo' },
 
   // — capitales —
   'La Havane': { en: 'Havana', es: 'La Habana', nl: 'Havana', ht: 'Lavàn' },
@@ -110,6 +113,7 @@ const values: DataI18n['values'] = {
   'pays constitutif du royaume des Pays-Bas': { en: 'constituent country of the Kingdom of the Netherlands', es: 'país constitutivo del Reino de los Países Bajos', nl: 'land binnen het Koninkrijk der Nederlanden', ht: 'peyi ki fè pati Wayòm Peyi Ba yo' },
   "territoire non incorporé des États-Unis": { en: 'unincorporated territory of the United States', es: 'territorio no incorporado de los Estados Unidos', nl: 'niet-geïncorporeerd gebied van de Verenigde Staten', ht: 'teritwa Etazini ki pa enkòpore' },
   "territoire britannique d'outre-mer": { en: 'British Overseas Territory', es: 'territorio británico de ultramar', nl: 'Brits overzees gebied', ht: 'teritwa britanik lòtbò lanmè' },
+  'commune à statut particulier des Pays-Bas': { en: 'special municipality of the Netherlands', es: 'municipio especial de los Países Bajos', nl: 'bijzondere gemeente van Nederland', ht: 'minisipalite espesyal Peyi Ba yo' },
 
   // — organisations internationales (chaque atome d'une cellule multivaleur) —
   ONU: { en: 'UN', nl: 'VN' },
@@ -132,6 +136,9 @@ const articles: DataI18n['articles'] = {
   Bahamas: { en: 'the', es: 'las', nl: 'de' },
   'Îles Caïmans': { en: 'the', es: 'las', nl: 'de' },
   'République dominicaine': { en: 'the', es: 'la', nl: 'de' },
+  'Îles Vierges britanniques': { en: 'the', es: 'las', nl: 'de' },
+  'Îles Vierges américaines': { en: 'the', es: 'las', nl: 'de' },
+  'Îles Turques-et-Caïques': { en: 'the', es: 'las', nl: 'de' },
 }
 
 // Les libellés FR auto-dérivés des en-têtes CSV (ASCII, tout en minuscules) sont parfois faux :

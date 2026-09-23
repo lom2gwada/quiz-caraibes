@@ -3,7 +3,7 @@
 // à l échelle indépendamment dans une viewBox 100x100, projection équirectangulaire (parallèle = latitude
 // du centre). Usage : node scripts/build-shapes.mjs
 import fs from 'node:fs'
-import { MATCH, NE_SOURCE } from './caribbean-territories.mjs'
+import { MATCH, NE_SOURCE, RING_FILTER } from './caribbean-territories.mjs'
 
 const SRC = NE_SOURCE
 const OUT = new URL('../src/data/shapes.ts', import.meta.url)
@@ -67,6 +67,7 @@ for (const [frName, pred] of Object.entries(MATCH)) {
     const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates
     for (const poly of polys) rings.push(poly[0].map(([x, y]) => [x, y]))
   }
+  if (RING_FILTER[frName]) rings = rings.filter(RING_FILTER[frName])
   rings.sort((a, b) => ringArea(b) - ringArea(a))
   const maxA = ringArea(rings[0])
   rings = rings.filter(r => ringArea(r) >= maxA * MIN_RING_FRAC).slice(0, MAX_RINGS)

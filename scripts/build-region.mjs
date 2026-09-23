@@ -4,7 +4,7 @@
 // carte, sur les fiches. Même source et même table de correspondance que build-shapes.mjs.
 // Usage : node scripts/build-region.mjs
 import fs from 'node:fs'
-import { MATCH, NE_SOURCE } from './caribbean-territories.mjs'
+import { MATCH, NE_SOURCE, RING_FILTER } from './caribbean-territories.mjs'
 
 const OUT = new URL('../src/data/region.ts', import.meta.url)
 const VIEW_W = 320, VIEW_H = 220
@@ -63,6 +63,7 @@ for (const [frName, pred] of Object.entries(MATCH)) {
     const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates
     for (const poly of polys) rings.push(poly[0].map(([x, y]) => [x, y]))
   }
+  if (RING_FILTER[frName]) rings = rings.filter(RING_FILTER[frName])
   rings.sort((a, b) => ringArea(b) - ringArea(a))
   const maxA = ringArea(rings[0])
   rings = rings.filter(r => ringArea(r) >= maxA * MIN_RING_FRAC).slice(0, MAX_RINGS)

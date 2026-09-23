@@ -17,6 +17,15 @@ export const MATCH = {
   'Sint Maarten': p => p.ADMIN === 'Sint Maarten',
   'Aruba': p => p.ADMIN === 'Aruba',
   'Curaçao': p => p.ADMIN === 'Curaçao',
+  // Regroupée par Natural Earth avec Saba et Sint Eustatius sous un seul multipolygone
+  // (« Caribbean Netherlands ») : RING_FILTER isole l'anneau de Bonaire (les deux autres
+  // îles, bien plus au nord, ne sont pas dans ce jeu de données).
+  'Bonaire': p => p.NAME === 'Caribbean Netherlands',
+  'Montserrat': p => p.ADMIN === 'Montserrat',
+  'Anguilla': p => p.ADMIN === 'Anguilla',
+  'Îles Vierges britanniques': p => p.ADMIN === 'British Virgin Islands',
+  'Îles Vierges américaines': p => p.ADMIN === 'United States Virgin Islands',
+  'Îles Turques-et-Caïques': p => p.ADMIN === 'Turks and Caicos Islands',
   'Antigua-et-Barbuda': p => p.ADMIN === 'Antigua and Barbuda',
   'Dominique': p => p.ADMIN === 'Dominica',
   'Grenade': p => p.ADMIN === 'Grenada',
@@ -33,6 +42,13 @@ export const MATCH = {
   'Colombie': p => p.ADMIN === 'Colombia',
   'Venezuela': p => p.ADMIN === 'Venezuela',
   'Mexique': p => p.ADMIN === 'Mexico',
+}
+
+// Filtre d'anneaux optionnel (par territoire) : appliqué APRÈS extraction des anneaux extérieurs
+// des features matchées par MATCH, avant tri/simplification — pour isoler une île précise dans un
+// multipolygone qui en regroupe plusieurs (cf. Bonaire ci-dessus).
+export const RING_FILTER = {
+  'Bonaire': (ring) => ring.every(([lon]) => lon < -66), // Bonaire (~-68°) ; Saba/Sint Eustatius (~-63°) écartées
 }
 
 export const NE_SOURCE = 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_map_subunits.geojson'
