@@ -47,17 +47,40 @@ const rdpRing = (ring, eps) => {
   return [...half1.slice(0, -1), ...half2.slice(0, -1)]
 }
 
+// Natural Earth 10m est trop grossier pour ces 3 très petits territoires (silhouettes peu
+// reconnaissables — retour utilisateur 2026-09-24) : leur `d` vient à la place du contour des
+// côtes OpenStreetMap (Overpass API, `natural=coastline`, licence ODbL), bien plus détaillé.
+// Sint Maarten/Saint-Martin partagent une seule île : découpée à la frontière (relevé Overpass des
+// relations admin 1231790/1891583, la frontière recoupe la côte à Cupecoy Bay et Oyster Pond —
+// fermée ici par un simple segment droit entre ces deux points plutôt que les ~400 points réels
+// de la frontière, insensible à cette échelle). Régénérer ces 3 entrées : voir l'historique du
+// commit qui a introduit ce commentaire pour la méthode complète (scripts ad hoc, non conservés
+// dans le dépôt) ; en attendant, `build-shapes.mjs` les préserve telles quelles.
+const MANUAL_OVERRIDES = new Set(['Saint-Martin', 'Saint-Barthélemy', 'Sint Maarten'])
+const existing = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : ''
+const preserved = {}
+for (const name of MANUAL_OVERRIDES) {
+  const m = existing.match(new RegExp('  ' + JSON.stringify(name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ': ("(?:[^"\\\\]|\\\\.)*"),'))
+  if (m) preserved[name] = JSON.parse(m[1])
+}
+
 const gj = await fetch(SRC).then((r) => r.json())
 const lines = [
   '// Silhouettes des territoires — générées depuis Natural Earth 10m admin-0 map subunits (domaine public).',
   '// Chaque forme est cadrée et mise à l\'échelle indépendamment dans une viewBox 100×100 (pas d\'échelle commune),',
   '// projection équirectangulaire (parallèle standard = latitude du centre). Régénérer : node scripts/build-shapes.mjs',
+  '// Exceptions : Saint-Martin / Saint-Barthélemy / Sint Maarten viennent d\'OpenStreetMap, pas de Natural Earth — voir MANUAL_OVERRIDES ci-dessus dans le script, préservées telles quelles à chaque régénération.',
   '',
   'export const shapes: Record<string, string> = {',
 ]
 const report = []
 
 for (const [frName, pred] of Object.entries(MATCH)) {
+  if (MANUAL_OVERRIDES.has(frName) && preserved[frName]) {
+    lines.push(`  ${JSON.stringify(frName)}: ${JSON.stringify(preserved[frName])},`)
+    report.push(`ok  ${frName.padEnd(34)} (préservée — OpenStreetMap, pas Natural Earth)`)
+    continue
+  }
   const feats = gj.features.filter(f => pred(f.properties))
   if (!feats.length) { report.push(`MANQUE  ${frName}`); continue }
 
