@@ -164,6 +164,7 @@ const columnLabels: DataI18n['columnLabels'] = {
   organisations: { en: 'international organisations', es: 'organizaciones internacionales', nl: 'internationale organisaties', ht: 'òganizasyon entènasyonal' },
   religions: { en: 'religions', es: 'religiones', nl: 'religies', ht: 'relijyon' },
   drapeau: { en: 'flag', es: 'bandera', nl: 'vlag', ht: 'drapo' },
+  'noms indigenes': { fr: 'noms indigènes', en: 'indigenous names', es: 'nombres indígenas', nl: 'inheemse namen', ht: 'non endijèn' },
 }
 
 const units: DataI18n['units'] = {

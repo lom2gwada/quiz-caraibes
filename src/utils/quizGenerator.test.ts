@@ -195,7 +195,8 @@ describe('generateQuiz', () => {
     }
     // Une colonne à valeur unique (capitale) garde l'ancienne formulation par équivalence.
     const capitaleBoolean = quiz.questions.find((q) => q.type === 'boolean' && q.tags.includes('capitale'))
-    expect(capitaleBoolean?.question).toMatch(/^Capitale de .+ : .+\.$/)
+    // « de »/« du »/« des »/« d' » selon l'article de tête du territoire (élision devant une voyelle).
+    expect(capitaleBoolean?.question).toMatch(/^Capitale (?:de|du|des|d')\s?.+ : .+\.$/)
   })
 
   it('numeric columns feed every question type, not just estimation and ordering', () => {
@@ -408,7 +409,7 @@ describe('generateQuiz', () => {
     expect(label(fixed, 'altitude_m')).toBe('Altitude du point culminant')
     // rien d'autre ne bouge : mêmes questions, mêmes ids, même ordre
     expect(fixed.questions.map((q) => q.id)).toEqual(plain.questions.map((q) => q.id))
-    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident|r[ée]gime|latitude|longitude|altitude/i
+    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident|r[ée]gime|latitude|longitude|altitude|indig[èe]ne/i
     const untouched = (quiz: typeof plain) => quiz.questions.map((q) => q.question).filter((q) => !corrected.test(q))
     expect(untouched(fixed)).toEqual(untouched(plain))
   })

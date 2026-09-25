@@ -22,7 +22,7 @@ const remote = createRemoteDataset({
     'pays', 'article', 'capitale', 'latitude_deg', 'longitude_deg', 'population', 'superficie_km2',
     'densite_hab_km2', 'pib_mds_usd', 'point_culminant', 'altitude_m', 'monnaie', 'langues',
     'indicatif_telephonique', 'domaine_internet', 'president', 'premier_ministre', 'independance',
-    'regime_politique', 'organisations', 'religions', 'drapeau',
+    'regime_politique', 'organisations', 'religions', 'drapeau', 'noms_indigenes',
   ],
 })
 
