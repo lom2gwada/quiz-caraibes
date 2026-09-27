@@ -52,6 +52,7 @@ const WATER_LABELS: { key: string; lon: number; lat: number }[] = [
   { key: 'caribbeanSea', lon: -75, lat: 15.5 },
   { key: 'atlanticOcean', lon: -68, lat: 23 },
   { key: 'pacificOcean', lon: -90, lat: 4 },
+  { key: 'gulfOfMexico', lon: -90, lat: 25 },
 ]
 
 /** Grande carte de la région (vue d'ensemble, tous les territoires à la fois) : survoler un pays

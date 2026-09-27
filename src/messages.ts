@@ -13,6 +13,7 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.caribbeanSea': 'Mer des Caraïbes',
     'regionOverview.atlanticOcean': 'Océan Atlantique',
     'regionOverview.pacificOcean': 'Océan Pacifique',
+    'regionOverview.gulfOfMexico': 'Golfe du Mexique',
     'fiche.regionLabel': 'Position dans les Caraïbes : {name} (survoler pour agrandir)',
   },
   en: {
@@ -28,6 +29,7 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.caribbeanSea': 'Caribbean Sea',
     'regionOverview.atlanticOcean': 'Atlantic Ocean',
     'regionOverview.pacificOcean': 'Pacific Ocean',
+    'regionOverview.gulfOfMexico': 'Gulf of Mexico',
     'fiche.regionLabel': 'Position in the Caribbean: {name} (hover to enlarge)',
   },
   es: {
@@ -43,6 +45,7 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.caribbeanSea': 'Mar Caribe',
     'regionOverview.atlanticOcean': 'Océano Atlántico',
     'regionOverview.pacificOcean': 'Océano Pacífico',
+    'regionOverview.gulfOfMexico': 'Golfo de México',
     'fiche.regionLabel': 'Posición en el Caribe: {name} (pasa el ratón para ampliar)',
   },
   nl: {
@@ -58,6 +61,7 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.caribbeanSea': 'Caribische Zee',
     'regionOverview.atlanticOcean': 'Atlantische Oceaan',
     'regionOverview.pacificOcean': 'Grote Oceaan',
+    'regionOverview.gulfOfMexico': 'Golf van Mexico',
     'fiche.regionLabel': 'Ligging in het Caribisch gebied: {name} (beweeg de muis om te vergroten)',
   },
   ht: {
@@ -73,6 +77,7 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.caribbeanSea': 'Lanmè Karayib la',
     'regionOverview.atlanticOcean': 'Oseyan Atlantik',
     'regionOverview.pacificOcean': 'Oseyan Pasifik',
+    'regionOverview.gulfOfMexico': 'Gòlf Meksiko',
     'fiche.regionLabel': 'Pozisyon nan Karayib la: {name} (pase sourit la pou agrandi)',
   },
 }
