@@ -10,6 +10,9 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.zoomIn': 'Zoomer',
     'regionOverview.zoomOut': 'Dézoomer',
     'regionOverview.zoomReset': 'Vue entière',
+    'regionOverview.caribbeanSea': 'Mer des Caraïbes',
+    'regionOverview.atlanticOcean': 'Océan Atlantique',
+    'regionOverview.pacificOcean': 'Océan Pacifique',
     'fiche.regionLabel': 'Position dans les Caraïbes : {name} (survoler pour agrandir)',
   },
   en: {
@@ -22,6 +25,9 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.zoomIn': 'Zoom in',
     'regionOverview.zoomOut': 'Zoom out',
     'regionOverview.zoomReset': 'Full view',
+    'regionOverview.caribbeanSea': 'Caribbean Sea',
+    'regionOverview.atlanticOcean': 'Atlantic Ocean',
+    'regionOverview.pacificOcean': 'Pacific Ocean',
     'fiche.regionLabel': 'Position in the Caribbean: {name} (hover to enlarge)',
   },
   es: {
@@ -34,6 +40,9 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.zoomIn': 'Acercar',
     'regionOverview.zoomOut': 'Alejar',
     'regionOverview.zoomReset': 'Vista completa',
+    'regionOverview.caribbeanSea': 'Mar Caribe',
+    'regionOverview.atlanticOcean': 'Océano Atlántico',
+    'regionOverview.pacificOcean': 'Océano Pacífico',
     'fiche.regionLabel': 'Posición en el Caribe: {name} (pasa el ratón para ampliar)',
   },
   nl: {
@@ -46,6 +55,9 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.zoomIn': 'Inzoomen',
     'regionOverview.zoomOut': 'Uitzoomen',
     'regionOverview.zoomReset': 'Volledig beeld',
+    'regionOverview.caribbeanSea': 'Caribische Zee',
+    'regionOverview.atlanticOcean': 'Atlantische Oceaan',
+    'regionOverview.pacificOcean': 'Grote Oceaan',
     'fiche.regionLabel': 'Ligging in het Caribisch gebied: {name} (beweeg de muis om te vergroten)',
   },
   ht: {
@@ -58,6 +70,9 @@ export const messages: Record<string, Record<string, string>> = {
     'regionOverview.zoomIn': 'Zoume',
     'regionOverview.zoomOut': 'Dezoume',
     'regionOverview.zoomReset': 'Tout kat la',
+    'regionOverview.caribbeanSea': 'Lanmè Karayib la',
+    'regionOverview.atlanticOcean': 'Oseyan Atlantik',
+    'regionOverview.pacificOcean': 'Oseyan Pasifik',
     'fiche.regionLabel': 'Pozisyon nan Karayib la: {name} (pase sourit la pou agrandi)',
   },
 }

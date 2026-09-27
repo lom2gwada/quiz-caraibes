@@ -24,6 +24,9 @@
 .region-overview-zoom button { padding: 0; width: 2rem; height: 2rem; display: grid; place-items: center; background: var(--surface-solid); border: 1px solid var(--border); border-radius: .4rem; color: var(--text-soft); font-size: 1.1rem; font-weight: 700; line-height: 1; }
 .region-overview-zoom button:not(:disabled):hover { color: var(--text); border-color: var(--accent); }
 .region-overview-zoom button:disabled { opacity: .4; cursor: default; }
+/* Noms des étendues d'eau (mer des Caraïbes, océans) : texte fixe façon carte marine, italique et
+   espacé, jamais interactif — il suit juste zoom/glisser comme le reste du contenu du SVG. */
+.region-water text { font-size: 5px; font-style: italic; font-weight: 600; letter-spacing: .12em; fill: var(--text-muted); opacity: .6; pointer-events: none; }
 .region-overview-dot { fill: var(--text-muted); transition: fill .1s ease, r .1s ease; }
 .region-overview-dot { r: 1.4px; }
 .region-overview-dot.is-active { fill: var(--accent); r: 2.6px; }

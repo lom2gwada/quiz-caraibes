@@ -42,6 +42,15 @@ const ZOOM_MAX = 8
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
+// Étendues d'eau (texte fixe façon carte marine, pas de donnée du CSV) : position approximative au
+// centre de chacune, en lon/lat réelles — converties comme les capitales via `lonLatToView`, donc
+// elles suivent zoom et glisser comme le reste de la carte.
+const WATER_LABELS: { key: string; lon: number; lat: number }[] = [
+  { key: 'caribbeanSea', lon: -75, lat: 15.5 },
+  { key: 'atlanticOcean', lon: -68, lat: 23 },
+  { key: 'pacificOcean', lon: -90, lat: 4 },
+]
+
 /** Grande carte de la région (vue d'ensemble, tous les territoires à la fois) : survoler un pays
  * (sa silhouette, ou son point pour les toutes petites îles) affiche son nom et sa capitale ; le
  * curseur donne ses coordonnées géographiques en continu. Les points sont placés sur les
@@ -84,6 +93,11 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
     window.addEventListener('mouseup', stop)
     return () => window.removeEventListener('mouseup', stop)
   }, [dragging])
+
+  const water = useMemo(() => WATER_LABELS.map(({ key, lon, lat }) => {
+    const [x, y] = lonLatToView(lon, lat)
+    return { key, x, y }
+  }), [])
 
   const points = useMemo<CapitalPoint[]>(() => {
     if (!latitudeColumn || !longitudeColumn) return []
@@ -218,6 +232,11 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
           <g className="region-land">
             {Object.entries(region).map(([name, shape]) => shape.d && (
               <path key={name} data-name={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />
+            ))}
+          </g>
+          <g className="region-water" aria-hidden="true">
+            {water.map((w) => (
+              <text key={w.key} x={w.x} y={w.y} textAnchor="middle">{t(`regionOverview.${w.key}`)}</text>
             ))}
           </g>
           <g>
