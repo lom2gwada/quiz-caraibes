@@ -13,17 +13,19 @@
 .region-capital-below { margin-top: 5px; }
 .region-capital-above { transform: translate(-50%, calc(-100% - 5px)); }
 .region-overview-map { position: relative; margin-top: 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: var(--shadow); overflow: hidden; }
-.region-overview-map svg { display: block; width: 100%; height: auto; cursor: crosshair; color: var(--accent); }
+.region-overview-map svg { display: block; width: 100%; height: auto; cursor: crosshair; color: var(--accent); touch-action: none; }
 .region-overview-map svg.is-clickable { cursor: pointer; }
+.region-overview-map svg.is-pannable { cursor: grab; }
+.region-overview-map svg.is-dragging { cursor: grabbing; }
 .region-overview-coords { position: absolute; top: .8rem; left: .8rem; z-index: 1; padding: .3rem .6rem; background: var(--surface-solid); border: 1px solid var(--border); border-radius: .4rem; font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text-soft); pointer-events: none; }
+/* Boutons de zoom (+/−, et ↺ « vue entière » une fois zoomé) : mêmes teintes que le badge de
+   coordonnées, en haut à droite pour ne pas gêner l'étiquette de survol (positionnée à gauche/centre). */
+.region-overview-zoom { position: absolute; top: .8rem; right: .8rem; z-index: 1; display: flex; gap: .3rem; }
+.region-overview-zoom button { padding: 0; width: 2rem; height: 2rem; display: grid; place-items: center; background: var(--surface-solid); border: 1px solid var(--border); border-radius: .4rem; color: var(--text-soft); font-size: 1.1rem; font-weight: 700; line-height: 1; }
+.region-overview-zoom button:not(:disabled):hover { color: var(--text); border-color: var(--accent); }
+.region-overview-zoom button:disabled { opacity: .4; cursor: default; }
 .region-overview-dot { fill: var(--text-muted); transition: fill .1s ease, r .1s ease; }
 .region-overview-dot { r: 1.4px; }
 .region-overview-dot.is-active { fill: var(--accent); r: 2.6px; }
 .region-overview-title { position: absolute; transform: translate(-50%, calc(-100% - 8px)); font-size: .95rem; font-weight: 800; color: var(--ink); text-shadow: 0 1px 4px var(--surface-solid), 0 1px 4px var(--surface-solid); white-space: nowrap; pointer-events: none; }
-/* Loupe qui suit le curseur : recadrage serré (LENS_SPAN) du même contenu SVG, cercle + manche pour
-   évoquer une vraie loupe. Sert surtout aux groupes de petites îles quasi superposées à l'échelle
-   de la carte d'ensemble (Saint-Martin/Sint Maarten/Saint-Barthélemy/Anguilla). */
-.region-overview-lens { position: absolute; width: 150px; height: 150px; transform: translate(-50%, -50%); border-radius: 50%; overflow: hidden; border: 3px solid var(--accent); box-shadow: var(--shadow); background: var(--surface-alt); pointer-events: none; z-index: 2; }
-.region-overview-lens svg { display: block; width: 100%; height: 100%; color: var(--accent); }
-.region-overview-lens::after { content: ''; position: absolute; right: -8px; bottom: -24px; width: 4px; height: 30px; border-radius: 2px; background: var(--accent); transform: rotate(45deg); }
 .fiche-modal .fiche-region { width: 78px; height: 54px; }

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { makeDatasetI18n, useLocale, useT } from '@engine'
 import type { DataI18n, GenSchema, Row } from '@engine'
@@ -33,11 +33,14 @@ interface CapitalPoint {
 // la même distance en unités de viewBox correspond à beaucoup plus de pixels réels.
 const SNAP_DISTANCE_SQ = 9
 
-// Largeur/hauteur (unités de viewBox) de la zone que la loupe grossit, centrée sur le curseur.
-// Volontairement serré : des groupes comme Saint-Martin/Sint Maarten/Saint-Barthélemy/Anguilla
-// sont à moins de 2 unités les uns des autres sur la carte d'ensemble (juste des points, à cette
-// échelle) — la loupe doit vraiment les écarter visuellement, pas juste grossir un peu.
-const LENS_SPAN = 8
+// Loupe « boutons » : chaque clic multiplie/divise le niveau de zoom par ce facteur, jusqu'à
+// ZOOM_MAX. Au-delà de 1, on recadre le viewBox autour d'un centre déplaçable (glisser la carte) —
+// utile pour les groupes de petites îles quasi superposés à l'échelle de la carte d'ensemble
+// (Saint-Martin/Sint Maarten/Saint-Barthélemy/Anguilla, à moins de 2 unités les uns des autres).
+const ZOOM_STEP = 1.6
+const ZOOM_MAX = 8
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
 /** Grande carte de la région (vue d'ensemble, tous les territoires à la fois) : survoler un pays
  * (sa silhouette, ou son point pour les toutes petites îles) affiche son nom et sa capitale ; le
@@ -51,10 +54,36 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
   const svgRef = useRef<SVGSVGElement>(null)
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [coords, setCoords] = useState<[number, number] | null>(null)
-  const [lensPos, setLensPos] = useState<[number, number] | null>(null)
 
   const [, , vw, vh] = regionViewBox.split(' ').map(Number)
   const { subjectColumn } = schema
+
+  const [zoom, setZoom] = useState(1)
+  const [center, setCenter] = useState<[number, number]>([vw / 2, vh / 2])
+  const [dragging, setDragging] = useState(false)
+  // Pendant un glisser : position souris + centre au dernier événement traité (mis à jour en
+  // continu, pas seulement au clic de départ — sinon un aller-retour hors du SVG en cours de
+  // glisser provoquerait un bond au retour). `wasDraggedRef` distingue un vrai glisser d'un simple
+  // clic (tolérance de quelques pixels) pour ne pas ouvrir une fiche par erreur en fin de glisser —
+  // survit à `handleUp` (qui vide `dragRef` avant que `onClick` ne se déclenche).
+  const dragRef = useRef<{ x: number; y: number; cx: number; cy: number; scaleX: number; scaleY: number } | null>(null)
+  const wasDraggedRef = useRef(false)
+
+  // Fenêtre actuellement visible du viewBox partagé : plein cadre à zoom 1 (le centre reste alors
+  // figé au milieu, min === max ci-dessous), un recadrage plus serré au-delà.
+  const viewW = vw / zoom
+  const viewH = vh / zoom
+  const viewCx = clamp(center[0], viewW / 2, vw - viewW / 2)
+  const viewCy = clamp(center[1], viewH / 2, vh - viewH / 2)
+  const viewMinX = viewCx - viewW / 2
+  const viewMinY = viewCy - viewH / 2
+
+  useEffect(() => {
+    if (!dragging) return
+    const stop = () => { dragRef.current = null; setDragging(false) }
+    window.addEventListener('mouseup', stop)
+    return () => window.removeEventListener('mouseup', stop)
+  }, [dragging])
 
   const points = useMemo<CapitalPoint[]>(() => {
     if (!latitudeColumn || !longitudeColumn) return []
@@ -106,48 +135,55 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
 
   const handleMove = (event: ReactMouseEvent<SVGSVGElement>) => {
     const loc = toSvgPoint(event)
-    if (!loc) return
-    setCoords(viewToLonLat(loc.x, loc.y))
-    setLensPos([loc.x, loc.y])
-    setHoverId(resolveId(event, loc))
+    if (loc) {
+      setCoords(viewToLonLat(loc.x, loc.y))
+      setHoverId(resolveId(event, loc))
+    }
+    const drag = dragRef.current
+    if (!drag) return
+    const dx = event.clientX - drag.x
+    const dy = event.clientY - drag.y
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) wasDraggedRef.current = true
+    const nextCx = drag.cx - dx / drag.scaleX
+    const nextCy = drag.cy - dy / drag.scaleY
+    drag.x = event.clientX; drag.y = event.clientY; drag.cx = nextCx; drag.cy = nextCy
+    setCenter([nextCx, nextCy])
   }
 
-  const handleLeave = () => { setHoverId(null); setCoords(null); setLensPos(null) }
+  const handleLeave = () => { setHoverId(null); setCoords(null) }
+
+  // Démarre un glisser (recadrage) quand la carte est zoomée — à zoom 1 la fenêtre visible occupe
+  // tout le viewBox, glisser n'aurait aucun effet.
+  const handleDown = (event: ReactMouseEvent<SVGSVGElement>) => {
+    if (zoom <= 1) return
+    const ctm = svgRef.current?.getScreenCTM()
+    if (!ctm) return
+    dragRef.current = { x: event.clientX, y: event.clientY, cx: center[0], cy: center[1], scaleX: ctm.a, scaleY: ctm.d }
+    setDragging(true)
+  }
+
+  const handleUp = () => { dragRef.current = null; setDragging(false) }
 
   const handleClick = (event: ReactMouseEvent<SVGSVGElement>) => {
+    if (wasDraggedRef.current) { wasDraggedRef.current = false; return }
     const loc = toSvgPoint(event)
     if (!loc) return
     const id = resolveId(event, loc)
     if (id) onOpenFiche?.(id)
   }
+
+  const handleZoomIn = () => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP))
+  const handleZoomOut = () => setZoom((z) => Math.max(1, z / ZOOM_STEP))
+  const handleZoomReset = () => { setZoom(1); setCenter([vw / 2, vh / 2]) }
+
   const hoverPoint = points.find((p) => p.canonical === hoverId)
-  const capitalAbove = hoverPoint ? (hoverPoint.y / vh) > 0.62 : false
+  const capitalAbove = hoverPoint ? ((hoverPoint.y - viewMinY) / viewH) > 0.62 : false
   // Ancre de l'étiquette décalée vers l'intérieur près des bords (le point, lui, reste exact) :
   // sinon un territoire proche du bord ferait déborder le texte hors de la carte.
-  const labelLeft = hoverPoint ? Math.min(88, Math.max(12, (hoverPoint.x / vw) * 100)) : 0
+  const labelLeft = hoverPoint ? Math.min(88, Math.max(12, ((hoverPoint.x - viewMinX) / viewW) * 100)) : 0
 
-  // Silhouettes + points, factorisés : rendus une fois pour la carte, une seconde fois (viewBox
-  // différent, plus serré) dans la loupe — même contenu, juste une fenêtre de recadrage différente.
-  const mapLayers = (
-    <>
-      <g className="region-land">
-        {Object.entries(region).map(([name, shape]) => shape.d && (
-          <path key={name} data-name={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />
-        ))}
-      </g>
-      <g>
-        {points.map((p) => (
-          <circle
-            key={p.canonical}
-            data-name={p.canonical}
-            cx={p.x}
-            cy={p.y}
-            className={p.canonical === hoverId ? 'region-overview-dot is-active' : 'region-overview-dot'}
-          />
-        ))}
-      </g>
-    </>
-  )
+  let svgClass = zoom > 1 ? (dragging ? 'is-dragging' : 'is-pannable') : undefined
+  if (!dragging && onOpenFiche && hoverId) svgClass = svgClass ? `${svgClass} is-clickable` : 'is-clickable'
 
   return (
     <section className="region-overview">
@@ -160,40 +196,51 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
         <div className="region-overview-coords">
           {coords ? `${formatNumber(coords[1], locale, 1)}°, ${formatNumber(coords[0], locale, 1)}°` : t('regionOverview.coordsHint')}
         </div>
+        <div className="region-overview-zoom">
+          <button type="button" onClick={handleZoomOut} disabled={zoom <= 1} title={t('regionOverview.zoomOut')} aria-label={t('regionOverview.zoomOut')}>−</button>
+          <button type="button" onClick={handleZoomIn} disabled={zoom >= ZOOM_MAX} title={t('regionOverview.zoomIn')} aria-label={t('regionOverview.zoomIn')}>+</button>
+          {zoom > 1 && (
+            <button type="button" onClick={handleZoomReset} title={t('regionOverview.zoomReset')} aria-label={t('regionOverview.zoomReset')}>↺</button>
+          )}
+        </div>
         <svg
           ref={svgRef}
-          viewBox={regionViewBox}
+          viewBox={`${viewMinX} ${viewMinY} ${viewW} ${viewH}`}
           onMouseMove={handleMove}
           onMouseLeave={handleLeave}
+          onMouseDown={handleDown}
+          onMouseUp={handleUp}
           onClick={handleClick}
-          className={onOpenFiche && hoverId ? 'is-clickable' : undefined}
+          className={svgClass}
           role="img"
           aria-label={t('regionOverview.title')}
         >
-          {mapLayers}
+          <g className="region-land">
+            {Object.entries(region).map(([name, shape]) => shape.d && (
+              <path key={name} data-name={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />
+            ))}
+          </g>
+          <g>
+            {points.map((p) => (
+              <circle
+                key={p.canonical}
+                data-name={p.canonical}
+                cx={p.x}
+                cy={p.y}
+                className={p.canonical === hoverId ? 'region-overview-dot is-active' : 'region-overview-dot'}
+              />
+            ))}
+          </g>
         </svg>
-        {lensPos && (
-          <div
-            className="region-overview-lens"
-            style={{ left: `${(lensPos[0] / vw) * 100}%`, top: `${(lensPos[1] / vh) * 100}%` }}
-          >
-            <svg
-              viewBox={`${lensPos[0] - LENS_SPAN / 2} ${lensPos[1] - LENS_SPAN / 2} ${LENS_SPAN} ${LENS_SPAN}`}
-              aria-hidden="true"
-            >
-              {mapLayers}
-            </svg>
-          </div>
-        )}
         {hoverPoint && (
           <>
-            <span className="region-overview-title" style={{ left: `${labelLeft}%`, top: `${(hoverPoint.y / vh) * 100}%` }}>
+            <span className="region-overview-title" style={{ left: `${labelLeft}%`, top: `${((hoverPoint.y - viewMinY) / viewH) * 100}%` }}>
               {hoverPoint.name}
             </span>
             {hoverPoint.capital && (
               <span
                 className={capitalAbove ? 'region-capital region-capital-above' : 'region-capital region-capital-below'}
-                style={{ left: `${labelLeft}%`, top: `${(hoverPoint.y / vh) * 100}%` }}
+                style={{ left: `${labelLeft}%`, top: `${((hoverPoint.y - viewMinY) / viewH) * 100}%` }}
               >
                 {hoverPoint.capital}
               </span>
