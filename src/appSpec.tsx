@@ -126,6 +126,62 @@ const speech: SpeechTemplates = {
   ],
 }
 
+// Présentation générale de la carte (bouton « Écouter » de la page d'accueil, pas d'une fiche) :
+// géographie, peuplement précolonial, colonisation, statuts politiques actuels. `{COUNT}` est
+// remplacé par le nombre réel de territoires (`buildIntro`) pour ne pas se désynchroniser du CSV.
+// Créole haïtien : première version, à faire relire par un locuteur natif (comme `speech` plus haut).
+const introTemplate: SpeechTemplates = {
+  fr: [
+    "La mer des Caraïbes s'étend entre les côtes de l'Amérique centrale, l'Amérique du Sud et les Grandes et Petites Antilles.",
+    "Elle réunit des dizaines d'îles et quelques territoires continentaux, sur un arc qui va de Cuba à Trinité-et-Tobago.",
+    "Avant l'arrivée des Européens, la région était peuplée par les Taïnos, les Kalinagos et d'autres peuples autochtones — plusieurs de leurs noms survivent encore aujourd'hui.",
+    "À partir du seizième siècle, Espagnols, Français, Britanniques et Néerlandais s'y sont installés, souvent au prix de la déportation de millions d'Africains réduits en esclavage.",
+    "Certains territoires sont devenus des républiques indépendantes, comme Cuba, Haïti ou la Jamaïque ; d'autres restent rattachés à la France, aux Pays-Bas, au Royaume-Uni ou aux États-Unis.",
+    "On y parle espagnol, anglais, français, néerlandais, et plusieurs langues créoles nées de ce brassage.",
+    'Ce quiz explore {COUNT} de ces territoires : leur capitale, leur histoire, leur langue, et bien plus encore.',
+  ],
+  en: [
+    'The Caribbean Sea stretches between the coasts of Central America, South America, and the Greater and Lesser Antilles.',
+    'It brings together dozens of islands and a few mainland territories, along an arc running from Cuba to Trinidad and Tobago.',
+    'Before Europeans arrived, the region was home to the Taíno, the Kalinago, and other Indigenous peoples — many of their names survive to this day.',
+    'From the sixteenth century onward, Spanish, French, British, and Dutch settlers arrived, often at the cost of deporting millions of enslaved Africans.',
+    'Some territories became independent republics, like Cuba, Haiti, or Jamaica; others remain tied to France, the Netherlands, the United Kingdom, or the United States.',
+    'Spanish, English, French, and Dutch are all spoken here, along with several Creole languages born from this mix of cultures.',
+    'This quiz explores {COUNT} of these territories: their capital, their history, their languages, and much more.',
+  ],
+  es: [
+    'El mar Caribe se extiende entre las costas de América Central, América del Sur y las Antillas Mayores y Menores.',
+    'Reúne decenas de islas y algunos territorios continentales, a lo largo de un arco que va de Cuba a Trinidad y Tobago.',
+    'Antes de la llegada de los europeos, la región estaba habitada por los taínos, los kalinagos y otros pueblos indígenas — muchos de sus nombres perduran hasta hoy.',
+    'A partir del siglo dieciséis, españoles, franceses, británicos y neerlandeses se establecieron allí, a menudo a costa de la deportación de millones de africanos esclavizados.',
+    'Algunos territorios se convirtieron en repúblicas independientes, como Cuba, Haití o Jamaica; otros siguen vinculados a Francia, los Países Bajos, el Reino Unido o los Estados Unidos.',
+    'Allí se hablan español, inglés, francés, neerlandés, y varias lenguas criollas nacidas de esta mezcla.',
+    'Este quiz explora {COUNT} de estos territorios: su capital, su historia, su idioma, y mucho más.',
+  ],
+  nl: [
+    'De Caribische Zee strekt zich uit tussen de kusten van Midden-Amerika, Zuid-Amerika en de Grote en Kleine Antillen.',
+    'Ze omvat tientallen eilanden en enkele gebieden op het vasteland, langs een boog die loopt van Cuba tot Trinidad en Tobago.',
+    "Voor de komst van de Europeanen woonden er de Taíno's, de Kalinago's en andere inheemse volkeren — veel van hun namen bestaan nog steeds.",
+    'Vanaf de zestiende eeuw vestigden zich er Spanjaarden, Fransen, Britten en Nederlanders, vaak ten koste van de deportatie van miljoenen tot slaaf gemaakte Afrikanen.',
+    'Sommige gebieden werden onafhankelijke republieken, zoals Cuba, Haïti of Jamaica; andere blijven verbonden met Frankrijk, Nederland, het Verenigd Koninkrijk of de Verenigde Staten.',
+    'Er wordt Spaans, Engels, Frans en Nederlands gesproken, samen met verschillende creoolse talen die uit deze vermenging zijn ontstaan.',
+    'Deze quiz verkent {COUNT} van deze gebieden: hun hoofdstad, hun geschiedenis, hun taal, en nog veel meer.',
+  ],
+  ht: [
+    'Lanmè Karayib la ap laji ant kòt Amerik Santral, Amerik disid, ak Gran ak Ti Zantiy yo.',
+    'Li gen plizyè douzèn zile ak kèk teritwa sou kontinan an, sou yon liy ki soti Kiba rive Trinite-e-Tobago.',
+    'Anvan Ewopeyen yo te rive, se Taino yo, Kalinago yo, ak lòt pèp endijèn ki te viv nan rejyon an — anpil nan non yo toujou la jodi a.',
+    'Apati sèzyèm syèk la, Panyòl, Franse, Britanik, ak Olandè te enstale la, souvan sou do depòtasyon plizyè milyon Afriken yo te fè tounen esklav.',
+    'Kèk teritwa vin repiblik endepandan, tankou Kiba, Ayiti oswa Jamayik ; lòt yo rete atache ak Lafrans, Peyi Ba, Wayòm Ini a, oswa Etazini.',
+    'Yo pale panyòl, anglè, franse, olandè, ansanm ak plizyè lang kreyòl ki fèt nan melanj sa a.',
+    'Kiz sa a eksplore {COUNT} nan teritwa sa yo: kapital yo, istwa yo, lang yo, ak plis toujou.',
+  ],
+}
+
+const buildIntro = (count: number): SpeechTemplates => Object.fromEntries(
+  Object.entries(introTemplate).map(([loc, sentences]) => [loc, (sentences ?? []).map((s) => s.replace('{COUNT}', String(count)))]),
+) as SpeechTemplates
+
 /** Construit le jeu de données Caraïbes à partir de lignes CSV — même forme que `rows` viennent du
  *  fichier embarqué (démarrage) ou de Supabase (bascule silencieuse une fois le fetch arrivé) :
  *  shapes/i18n/aliases/region restent du code statique, indexés par le nom exact des territoires
@@ -149,6 +205,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     editable: true,
     ficheDecor,
     speech,
+    intro: buildIntro(rows.length),
     views: [{
       id: 'map',
       icon: '🧭',
