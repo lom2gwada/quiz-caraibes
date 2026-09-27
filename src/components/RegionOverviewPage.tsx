@@ -10,6 +10,9 @@ interface RegionOverviewPageProps {
   rows: Row[]
   schema: GenSchema
   region: Record<string, RegionShape>
+  /** Silhouette de fond, décorative (reste du continent) : même viewBox/projection que `region`,
+   *  jamais interactive — un seul `d` combinant tous les contours pertinents. */
+  regionContext?: string
   regionViewBox: string
   capitalColumn?: string
   latitudeColumn?: string
@@ -56,7 +59,7 @@ const WATER_LABELS: { key: string; lon: number; lat: number }[] = [
  * curseur donne ses coordonnées géographiques en continu. Les points sont placés sur les
  * coordonnées réelles de la capitale (pas le centroïde du territoire, moins précis, utilisé par
  * la petite carte des fiches). */
-export function RegionOverviewPage({ rows, schema, region, regionViewBox, capitalColumn, latitudeColumn, longitudeColumn, i18n, onBack, onOpenFiche }: RegionOverviewPageProps) {
+export function RegionOverviewPage({ rows, schema, region, regionContext, regionViewBox, capitalColumn, latitudeColumn, longitudeColumn, i18n, onBack, onOpenFiche }: RegionOverviewPageProps) {
   const t = useT()
   const locale = useLocale()
   const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
@@ -229,6 +232,7 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
           role="img"
           aria-label={t('regionOverview.title')}
         >
+          {regionContext && <path className="region-context" d={regionContext} aria-hidden="true" />}
           <g className="region-land">
             {Object.entries(region).map(([name, shape]) => shape.d && (
               <path key={name} data-name={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />

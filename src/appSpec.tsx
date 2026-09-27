@@ -5,6 +5,7 @@ import { shapes } from './data/shapes'
 import { aliases } from './data/aliases'
 import { caribbeanI18n } from './data/caribbean.i18n'
 import { region, REGION_VIEWBOX } from './data/region'
+import { regionContext } from './data/regionContext'
 import { CaribbeanBackground } from './components/CaribbeanBackground'
 import { RegionDecor, ShapeDecor } from './components/FicheDecor'
 import { RegionOverviewPage } from './components/RegionOverviewPage'
@@ -216,6 +217,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
           rows={dataset.rows}
           schema={dataset.schema}
           region={region}
+          regionContext={regionContext}
           regionViewBox={REGION_VIEWBOX}
           capitalColumn={CAPITAL_COLUMN}
           latitudeColumn="latitude_deg"
