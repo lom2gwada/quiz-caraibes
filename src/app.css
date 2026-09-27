@@ -20,4 +20,10 @@
 .region-overview-dot { r: 1.4px; }
 .region-overview-dot.is-active { fill: var(--accent); r: 2.6px; }
 .region-overview-title { position: absolute; transform: translate(-50%, calc(-100% - 8px)); font-size: .95rem; font-weight: 800; color: var(--ink); text-shadow: 0 1px 4px var(--surface-solid), 0 1px 4px var(--surface-solid); white-space: nowrap; pointer-events: none; }
+/* Loupe qui suit le curseur : recadrage serré (LENS_SPAN) du même contenu SVG, cercle + manche pour
+   évoquer une vraie loupe. Sert surtout aux groupes de petites îles quasi superposées à l'échelle
+   de la carte d'ensemble (Saint-Martin/Sint Maarten/Saint-Barthélemy/Anguilla). */
+.region-overview-lens { position: absolute; width: 150px; height: 150px; transform: translate(-50%, -50%); border-radius: 50%; overflow: hidden; border: 3px solid var(--accent); box-shadow: var(--shadow); background: var(--surface-alt); pointer-events: none; z-index: 2; }
+.region-overview-lens svg { display: block; width: 100%; height: 100%; color: var(--accent); }
+.region-overview-lens::after { content: ''; position: absolute; right: -8px; bottom: -24px; width: 4px; height: 30px; border-radius: 2px; background: var(--accent); transform: rotate(45deg); }
 .fiche-modal .fiche-region { width: 78px; height: 54px; }

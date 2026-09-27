@@ -33,6 +33,12 @@ interface CapitalPoint {
 // la même distance en unités de viewBox correspond à beaucoup plus de pixels réels.
 const SNAP_DISTANCE_SQ = 9
 
+// Largeur/hauteur (unités de viewBox) de la zone que la loupe grossit, centrée sur le curseur.
+// Volontairement serré : des groupes comme Saint-Martin/Sint Maarten/Saint-Barthélemy/Anguilla
+// sont à moins de 2 unités les uns des autres sur la carte d'ensemble (juste des points, à cette
+// échelle) — la loupe doit vraiment les écarter visuellement, pas juste grossir un peu.
+const LENS_SPAN = 8
+
 /** Grande carte de la région (vue d'ensemble, tous les territoires à la fois) : survoler un pays
  * (sa silhouette, ou son point pour les toutes petites îles) affiche son nom et sa capitale ; le
  * curseur donne ses coordonnées géographiques en continu. Les points sont placés sur les
@@ -45,6 +51,7 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
   const svgRef = useRef<SVGSVGElement>(null)
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [coords, setCoords] = useState<[number, number] | null>(null)
+  const [lensPos, setLensPos] = useState<[number, number] | null>(null)
 
   const [, , vw, vh] = regionViewBox.split(' ').map(Number)
   const { subjectColumn } = schema
@@ -101,10 +108,11 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
     const loc = toSvgPoint(event)
     if (!loc) return
     setCoords(viewToLonLat(loc.x, loc.y))
+    setLensPos([loc.x, loc.y])
     setHoverId(resolveId(event, loc))
   }
 
-  const handleLeave = () => { setHoverId(null); setCoords(null) }
+  const handleLeave = () => { setHoverId(null); setCoords(null); setLensPos(null) }
 
   const handleClick = (event: ReactMouseEvent<SVGSVGElement>) => {
     const loc = toSvgPoint(event)
@@ -117,6 +125,29 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
   // Ancre de l'étiquette décalée vers l'intérieur près des bords (le point, lui, reste exact) :
   // sinon un territoire proche du bord ferait déborder le texte hors de la carte.
   const labelLeft = hoverPoint ? Math.min(88, Math.max(12, (hoverPoint.x / vw) * 100)) : 0
+
+  // Silhouettes + points, factorisés : rendus une fois pour la carte, une seconde fois (viewBox
+  // différent, plus serré) dans la loupe — même contenu, juste une fenêtre de recadrage différente.
+  const mapLayers = (
+    <>
+      <g className="region-land">
+        {Object.entries(region).map(([name, shape]) => shape.d && (
+          <path key={name} data-name={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />
+        ))}
+      </g>
+      <g>
+        {points.map((p) => (
+          <circle
+            key={p.canonical}
+            data-name={p.canonical}
+            cx={p.x}
+            cy={p.y}
+            className={p.canonical === hoverId ? 'region-overview-dot is-active' : 'region-overview-dot'}
+          />
+        ))}
+      </g>
+    </>
+  )
 
   return (
     <section className="region-overview">
@@ -139,23 +170,21 @@ export function RegionOverviewPage({ rows, schema, region, regionViewBox, capita
           role="img"
           aria-label={t('regionOverview.title')}
         >
-          <g className="region-land">
-            {Object.entries(region).map(([name, shape]) => shape.d && (
-              <path key={name} data-name={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />
-            ))}
-          </g>
-          <g>
-            {points.map((p) => (
-              <circle
-                key={p.canonical}
-                data-name={p.canonical}
-                cx={p.x}
-                cy={p.y}
-                className={p.canonical === hoverId ? 'region-overview-dot is-active' : 'region-overview-dot'}
-              />
-            ))}
-          </g>
+          {mapLayers}
         </svg>
+        {lensPos && (
+          <div
+            className="region-overview-lens"
+            style={{ left: `${(lensPos[0] / vw) * 100}%`, top: `${(lensPos[1] / vh) * 100}%` }}
+          >
+            <svg
+              viewBox={`${lensPos[0] - LENS_SPAN / 2} ${lensPos[1] - LENS_SPAN / 2} ${LENS_SPAN} ${LENS_SPAN}`}
+              aria-hidden="true"
+            >
+              {mapLayers}
+            </svg>
+          </div>
+        )}
         {hoverPoint && (
           <>
             <span className="region-overview-title" style={{ left: `${labelLeft}%`, top: `${(hoverPoint.y / vh) * 100}%` }}>
