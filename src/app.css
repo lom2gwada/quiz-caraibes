@@ -32,6 +32,9 @@
 .region-water text { font-size: 5px; font-style: italic; font-weight: 600; letter-spacing: .12em; fill: var(--text-muted); opacity: .6; pointer-events: none; }
 .region-pick { margin-top: 1rem; }
 .region-land .region-picked { fill: currentColor; stroke: var(--ink); stroke-width: .7; }
+/* Question « Cliquez sur X » : points des capitales discrets (ils restent pleinement visibles au survol et une fois choisis). */
+.region-pick .region-overview-dot { opacity: .35; transition: fill .1s ease, r .1s ease, opacity .1s ease; }
+.region-pick .region-overview-dot.is-active { opacity: 1; }
 .region-overview-dot { fill: var(--text-muted); transition: fill .1s ease, r .1s ease; }
 .region-overview-dot { r: 1.4px; }
 .region-overview-dot.is-active { fill: var(--accent); r: 2.6px; }
