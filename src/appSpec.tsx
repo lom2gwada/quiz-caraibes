@@ -189,9 +189,10 @@ const buildIntro = (count: number): SpeechTemplates => Object.fromEntries(
  *  et certaines valeurs de cellules. */
 function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
   const baseSchema = { ...inferSchema(rows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' }
+  const schema = applySchemaConfig(baseSchema, schemaConfig)
   return {
     rows,
-    schema: applySchemaConfig(baseSchema, schemaConfig),
+    schema,
     shapes,
     aliases,
     i18n: caribbeanI18n,
@@ -207,6 +208,24 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     ficheDecor,
     speech,
     intro: buildIntro(rows.length),
+    // « Cliquez sur X » : tous les territoires ayant une silhouette ou un point sur la carte régionale.
+    map: {
+      targets: Object.keys(region),
+      render: ({ selected, onPick }) => (
+        <RegionOverviewPage
+          rows={rows}
+          schema={schema}
+          region={region}
+          regionContext={regionContext}
+          regionViewBox={REGION_VIEWBOX}
+          capitalColumn={CAPITAL_COLUMN}
+          latitudeColumn="latitude_deg"
+          longitudeColumn="longitude_deg"
+          i18n={caribbeanI18n}
+          pick={{ selected, onPick }}
+        />
+      ),
+    },
     views: [{
       id: 'map',
       icon: '🧭',

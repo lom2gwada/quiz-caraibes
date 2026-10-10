@@ -18,7 +18,10 @@ interface RegionOverviewPageProps {
   latitudeColumn?: string
   longitudeColumn?: string
   i18n?: DataI18n
-  onBack: () => void
+  onBack?: () => void
+  /** Mode « Cliquez sur X » (question de quiz) : plus de titre, d'indice, de coordonnées ni d'étiquettes (elles donneraient la
+   *  réponse) ; un clic désigne un territoire au lieu d'ouvrir sa fiche. */
+  pick?: { selected?: string; onPick: (name: string) => void }
   /** Ouvre la fiche du territoire survolé au clic. Reçoit la valeur FR canonique. */
   onOpenFiche?: (name: string) => void
 }
@@ -60,7 +63,7 @@ const WATER_LABELS: { key: string; lon: number; lat: number }[] = [
  * curseur donne ses coordonnées géographiques en continu. Les points sont placés sur les
  * coordonnées réelles de la capitale (pas le centroïde du territoire, moins précis, utilisé par
  * la petite carte des fiches). */
-export function RegionOverviewPage({ rows, schema, region, regionContext, regionViewBox, capitalColumn, latitudeColumn, longitudeColumn, i18n, onBack, onOpenFiche }: RegionOverviewPageProps) {
+export function RegionOverviewPage({ rows, schema, region, regionContext, regionViewBox, capitalColumn, latitudeColumn, longitudeColumn, i18n, onBack, onOpenFiche, pick }: RegionOverviewPageProps) {
   const t = useT()
   const locale = useLocale()
   const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
@@ -187,7 +190,9 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
     const loc = toSvgPoint(event)
     if (!loc) return
     const id = resolveId(event, loc)
-    if (id) onOpenFiche?.(id)
+    if (!id) return
+    if (pick) pick.onPick(id)
+    else onOpenFiche?.(id)
   }
 
   const handleZoomIn = () => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP))
@@ -201,19 +206,13 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
   const labelLeft = hoverPoint ? Math.min(88, Math.max(12, ((hoverPoint.x - viewMinX) / viewW) * 100)) : 0
 
   let svgClass = zoom > 1 ? (dragging ? 'is-dragging' : 'is-pannable') : undefined
-  if (!dragging && onOpenFiche && hoverId) svgClass = svgClass ? `${svgClass} is-clickable` : 'is-clickable'
+  if (!dragging && (onOpenFiche || pick) && hoverId) svgClass = svgClass ? `${svgClass} is-clickable` : 'is-clickable'
 
-  return (
-    <section className="region-overview">
-      <div className="stats-header">
-        <h2>{t('regionOverview.title')}</h2>
-        <button type="button" className="secondary" onClick={onBack}>{t('common.back')}</button>
-      </div>
-      <p>{t('regionOverview.hint')}</p>
-      <div className="region-overview-map">
-        <div className="region-overview-coords">
+  const mapBlock = (
+      <div className={pick ? 'region-overview-map region-pick' : 'region-overview-map'}>
+        {!pick && <div className="region-overview-coords">
           {coords ? `${formatNumber(coords[1], locale, 1)}°, ${formatNumber(coords[0], locale, 1)}°` : t('regionOverview.coordsHint')}
-        </div>
+        </div>}
         <div className="region-overview-zoom">
           <button type="button" onClick={handleZoomOut} disabled={zoom <= 1} title={t('regionOverview.zoomOut')} aria-label={t('regionOverview.zoomOut')}>−</button>
           <button type="button" onClick={handleZoomIn} disabled={zoom >= ZOOM_MAX} title={t('regionOverview.zoomIn')} aria-label={t('regionOverview.zoomIn')}>+</button>
@@ -236,7 +235,7 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
           {regionContext && <path className="region-context" d={regionContext} aria-hidden="true" />}
           <g className="region-land">
             {Object.entries(region).map(([name, shape]) => shape.d && (
-              <path key={name} data-name={name} d={shape.d} className={name === hoverId ? 'region-hl' : undefined} />
+              <path key={name} data-name={name} d={shape.d} className={name === pick?.selected ? 'region-hl region-picked' : name === hoverId ? 'region-hl' : undefined} />
             ))}
           </g>
           <g className="region-water" aria-hidden="true">
@@ -251,12 +250,12 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
                 data-name={p.canonical}
                 cx={p.x}
                 cy={p.y}
-                className={p.canonical === hoverId ? 'region-overview-dot is-active' : 'region-overview-dot'}
+                className={p.canonical === hoverId || p.canonical === pick?.selected ? 'region-overview-dot is-active' : 'region-overview-dot'}
               />
             ))}
           </g>
         </svg>
-        {hoverPoint && (
+        {hoverPoint && !pick && (
           <>
             <span className="region-overview-title" style={{ left: `${labelLeft}%`, top: `${((hoverPoint.y - viewMinY) / viewH) * 100}%` }}>
               {hoverPoint.name}
@@ -272,6 +271,17 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
           </>
         )}
       </div>
+  )
+
+  if (pick) return mapBlock
+  return (
+    <section className="region-overview">
+      <div className="stats-header">
+        <h2>{t('regionOverview.title')}</h2>
+        <button type="button" className="secondary" onClick={onBack}>{t('common.back')}</button>
+      </div>
+      <p>{t('regionOverview.hint')}</p>
+      {mapBlock}
     </section>
   )
 }

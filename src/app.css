@@ -13,7 +13,7 @@
 .region-capital-below { margin-top: 5px; }
 .region-capital-above { transform: translate(-50%, calc(-100% - 5px)); }
 .region-overview-map { position: relative; margin-top: 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: var(--shadow); overflow: hidden; }
-.region-overview-map svg { display: block; width: 100%; height: auto; cursor: crosshair; color: var(--accent); touch-action: none; }
+.region-overview-map svg { display: block; width: 100%; height: auto; cursor: crosshair; color: var(--accent); }
 /* Reste du continent (États-Unis, Équateur…) : juste un contour, jamais rempli comme les vrais
    territoires du quiz — pour ne pas laisser croire que c'est cliquable/jouable. */
 .region-context { fill: none; stroke: var(--text-muted); stroke-width: .5; opacity: .35; pointer-events: none; }
@@ -30,6 +30,8 @@
 /* Noms des étendues d'eau (mer des Caraïbes, océans) : texte fixe façon carte marine, italique et
    espacé, jamais interactif — il suit juste zoom/glisser comme le reste du contenu du SVG. */
 .region-water text { font-size: 5px; font-style: italic; font-weight: 600; letter-spacing: .12em; fill: var(--text-muted); opacity: .6; pointer-events: none; }
+.region-pick { margin-top: 1rem; }
+.region-land .region-picked { fill: currentColor; stroke: var(--ink); stroke-width: .7; }
 .region-overview-dot { fill: var(--text-muted); transition: fill .1s ease, r .1s ease; }
 .region-overview-dot { r: 1.4px; }
 .region-overview-dot.is-active { fill: var(--accent); r: 2.6px; }
