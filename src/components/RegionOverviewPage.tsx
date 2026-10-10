@@ -84,6 +84,14 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
   // survit à `handleUp` (qui vide `dragRef` avant que `onClick` ne se déclenche).
   const dragRef = useRef<{ x: number; y: number; cx: number; cy: number; scaleX: number; scaleY: number } | null>(null)
   const wasDraggedRef = useRef(false)
+  // Pincement à deux doigts : doigts actifs + dernière distance/milieu connus. Zoom et centre sont aussi recopiés dans des refs :
+  // plusieurs événements de pointeur peuvent arriver avant le rendu suivant, et chacun doit partir de l'état déjà mis à jour.
+  const pointersRef = useRef(new Map<number, { x: number; y: number }>())
+  const pinchRef = useRef<{ dist: number; mx: number; my: number } | null>(null)
+  const zoomRef = useRef(zoom)
+  const centerRef = useRef(center)
+  zoomRef.current = zoom
+  centerRef.current = center
 
   // Fenêtre actuellement visible du viewBox partagé : plein cadre à zoom 1 (le centre reste alors
   // figé au milieu, min === max ci-dessous), un recadrage plus serré au-delà.
@@ -158,6 +166,10 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
   // Pointer events (souris + tactile unifiés) : au doigt, glisser déplace la carte zoomée, comme à la souris. Pas de survol
   // au tactile (pas de curseur) ; seul le premier doigt compte (un second ferait sauter le glisser).
   const handleMove = (event: ReactPointerEvent<SVGSVGElement>) => {
+    if (event.pointerType === 'touch' && pointersRef.current.has(event.pointerId)) {
+      pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
+      if (pointersRef.current.size === 2 && pinchRef.current) { pinch(); return }
+    }
     if (!event.isPrimary) return
     const loc = toSvgPoint(event)
     if (loc && event.pointerType !== 'touch') {
@@ -175,12 +187,59 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
     setCenter([nextCx, nextCy])
   }
 
+  // Pincement : le zoom suit l'écartement des doigts, et le point de la carte sous leur milieu reste sous leur milieu
+  // (donc écarter zoome sur l'endroit pincé, et déplacer les deux doigts ensemble fait glisser la carte).
+  const pinch = () => {
+    const svg = svgRef.current
+    const [a, b] = Array.from(pointersRef.current.values())
+    const last = pinchRef.current
+    if (!svg || !last || !a || !b) return
+    const rect = svg.getBoundingClientRect()
+    const dist = Math.hypot(a.x - b.x, a.y - b.y)
+    const mx = (a.x + b.x) / 2
+    const my = (a.y + b.y) / 2
+    if (!rect.width || !rect.height || !last.dist || !dist) return
+    const viewOf = (z: number, c: [number, number]) => {
+      const w = vw / z
+      const h = vh / z
+      return { w, h, minX: clamp(c[0], w / 2, vw - w / 2) - w / 2, minY: clamp(c[1], h / 2, vh - h / 2) - h / 2 }
+    }
+    const before = viewOf(zoomRef.current, centerRef.current)
+    const anchorX = before.minX + ((last.mx - rect.left) / rect.width) * before.w
+    const anchorY = before.minY + ((last.my - rect.top) / rect.height) * before.h
+    const nextZoom = clamp(zoomRef.current * (dist / last.dist), 1, ZOOM_MAX)
+    const w = vw / nextZoom
+    const h = vh / nextZoom
+    const nextCenter: [number, number] = [
+      anchorX - ((mx - rect.left) / rect.width) * w + w / 2,
+      anchorY - ((my - rect.top) / rect.height) * h + h / 2,
+    ]
+    zoomRef.current = nextZoom
+    centerRef.current = nextCenter
+    setZoom(nextZoom)
+    setCenter(nextCenter)
+    pinchRef.current = { dist, mx, my }
+    wasDraggedRef.current = true
+  }
+
   const handleLeave = () => { setHoverId(null); setCoords(null) }
 
   // Démarre un glisser (recadrage) quand la carte est zoomée — à zoom 1 la fenêtre visible occupe
   // tout le viewBox, glisser n'aurait aucun effet.
   const handleDown = (event: ReactPointerEvent<SVGSVGElement>) => {
     wasDraggedRef.current = false // au tactile, un glisser n'émet pas de clic : sans ça il avalerait le tap suivant
+    if (event.pointerType === 'touch') {
+      if (event.isPrimary) pointersRef.current.clear() // premier doigt = nouveau geste (écarte d'éventuels doigts restés « actifs » à tort)
+      pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
+      if (pointersRef.current.size === 2) {
+        const [a, b] = Array.from(pointersRef.current.values())
+        pinchRef.current = { dist: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }
+        dragRef.current = null
+        setDragging(false)
+        wasDraggedRef.current = true
+        return
+      }
+    }
     if (zoom <= 1 || !event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
     const ctm = svgRef.current?.getScreenCTM()
     if (!ctm) return
@@ -188,7 +247,12 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
     setDragging(true)
   }
 
-  const handleUp = () => { dragRef.current = null; setDragging(false) }
+  const handleUp = (event: ReactPointerEvent<SVGSVGElement>) => {
+    pointersRef.current.delete(event.pointerId)
+    if (pointersRef.current.size < 2) pinchRef.current = null
+    dragRef.current = null
+    setDragging(false)
+  }
 
   const handleClick = (event: ReactMouseEvent<SVGSVGElement>) => {
     if (wasDraggedRef.current) { wasDraggedRef.current = false; return }

@@ -18,6 +18,7 @@
    territoires du quiz — pour ne pas laisser croire que c'est cliquable/jouable. */
 .region-context { fill: none; stroke: var(--text-muted); stroke-width: .5; opacity: .35; pointer-events: none; }
 .region-overview-map svg.is-clickable { cursor: pointer; }
+.region-overview-map svg { touch-action: pan-y; } /* vue entière : la page défile au doigt, le pincement revient à la carte */
 .region-overview-map svg.is-pannable { cursor: grab; }
 .region-overview-map svg.is-pannable, .region-overview-map svg.is-dragging { touch-action: none; } /* zoomé : le doigt déplace la carte, pas la page */
 .region-overview-map svg.is-dragging { cursor: grabbing; }
