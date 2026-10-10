@@ -19,6 +19,7 @@
 .region-context { fill: none; stroke: var(--text-muted); stroke-width: .5; opacity: .35; pointer-events: none; }
 .region-overview-map svg.is-clickable { cursor: pointer; }
 .region-overview-map svg.is-pannable { cursor: grab; }
+.region-overview-map svg.is-pannable, .region-overview-map svg.is-dragging { touch-action: none; } /* zoomé : le doigt déplace la carte, pas la page */
 .region-overview-map svg.is-dragging { cursor: grabbing; }
 .region-overview-coords { position: absolute; top: .8rem; left: .8rem; z-index: 1; padding: .3rem .6rem; background: var(--surface-solid); border: 1px solid var(--border); border-radius: .4rem; font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text-soft); pointer-events: none; }
 /* Boutons de zoom (+/−, et ↺ « vue entière » une fois zoomé) : mêmes teintes que le badge de

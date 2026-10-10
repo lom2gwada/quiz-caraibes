@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { MouseEvent as ReactMouseEvent } from 'react'
+import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react'
 import { makeDatasetI18n, useLocale, useT } from '@engine'
 import type { DataI18n, GenSchema, Row } from '@engine'
 import { formatNumber } from '@engine/utils/number'
@@ -97,8 +97,9 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
   useEffect(() => {
     if (!dragging) return
     const stop = () => { dragRef.current = null; setDragging(false) }
-    window.addEventListener('mouseup', stop)
-    return () => window.removeEventListener('mouseup', stop)
+    window.addEventListener('pointerup', stop)
+    window.addEventListener('pointercancel', stop)
+    return () => { window.removeEventListener('pointerup', stop); window.removeEventListener('pointercancel', stop) }
   }, [dragging])
 
   const water = useMemo(() => WATER_LABELS.map(({ key, lon, lat }) => {
@@ -154,9 +155,12 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
     return nearestAt(loc)
   }
 
-  const handleMove = (event: ReactMouseEvent<SVGSVGElement>) => {
+  // Pointer events (souris + tactile unifiés) : au doigt, glisser déplace la carte zoomée, comme à la souris. Pas de survol
+  // au tactile (pas de curseur) ; seul le premier doigt compte (un second ferait sauter le glisser).
+  const handleMove = (event: ReactPointerEvent<SVGSVGElement>) => {
+    if (!event.isPrimary) return
     const loc = toSvgPoint(event)
-    if (loc) {
+    if (loc && event.pointerType !== 'touch') {
       setCoords(viewToLonLat(loc.x, loc.y))
       setHoverId(resolveId(event, loc))
     }
@@ -175,8 +179,9 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
 
   // Démarre un glisser (recadrage) quand la carte est zoomée — à zoom 1 la fenêtre visible occupe
   // tout le viewBox, glisser n'aurait aucun effet.
-  const handleDown = (event: ReactMouseEvent<SVGSVGElement>) => {
-    if (zoom <= 1) return
+  const handleDown = (event: ReactPointerEvent<SVGSVGElement>) => {
+    wasDraggedRef.current = false // au tactile, un glisser n'émet pas de clic : sans ça il avalerait le tap suivant
+    if (zoom <= 1 || !event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
     const ctm = svgRef.current?.getScreenCTM()
     if (!ctm) return
     dragRef.current = { x: event.clientX, y: event.clientY, cx: center[0], cy: center[1], scaleX: ctm.a, scaleY: ctm.d }
@@ -223,10 +228,11 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
         <svg
           ref={svgRef}
           viewBox={`${viewMinX} ${viewMinY} ${viewW} ${viewH}`}
-          onMouseMove={handleMove}
-          onMouseLeave={handleLeave}
-          onMouseDown={handleDown}
-          onMouseUp={handleUp}
+          onPointerMove={handleMove}
+          onPointerLeave={handleLeave}
+          onPointerDown={handleDown}
+          onPointerUp={handleUp}
+          onPointerCancel={handleUp}
           onClick={handleClick}
           className={svgClass}
           role="img"
