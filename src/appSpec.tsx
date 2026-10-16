@@ -43,7 +43,7 @@ const speech: SpeechTemplates = {
   fr: [
     '{Name}, un territoire des Caraïbes.',
     'Sa capitale est {capitale}.',
-    'Ses grandes villes : {grandes_villes}.',
+    'Autres grandes villes : {grandes_villes}.',
     'Pays de rattachement : {pays_de_rattachement}.',
     'Groupe géographique : {groupe_geographique}.',
     'Son régime politique : {regime_politique}.',
@@ -66,7 +66,7 @@ const speech: SpeechTemplates = {
   en: [
     '{Name}, a Caribbean territory.',
     'Its capital is {capitale}.',
-    'Its major cities: {grandes_villes}.',
+    'Other major cities: {grandes_villes}.',
     'It belongs to {pays_de_rattachement}.',
     'Geographic group: {groupe_geographique}.',
     'Political system: {regime_politique}.',
@@ -89,7 +89,7 @@ const speech: SpeechTemplates = {
   es: [
     '{Name}, un territorio del Caribe.',
     'Su capital es {capitale}.',
-    'Sus ciudades principales: {grandes_villes}.',
+    'Otras ciudades importantes: {grandes_villes}.',
     'Pertenece a {pays_de_rattachement}.',
     'Grupo geográfico: {groupe_geographique}.',
     'Su régimen político: {regime_politique}.',
@@ -112,7 +112,7 @@ const speech: SpeechTemplates = {
   nl: [
     '{Name}, een gebied in het Caribisch gebied.',
     'De hoofdstad is {capitale}.',
-    'Grote steden: {grandes_villes}.',
+    'Andere grote steden: {grandes_villes}.',
     'Het behoort tot {pays_de_rattachement}.',
     'Geografische groep: {groupe_geographique}.',
     'Staatsvorm: {regime_politique}.',
@@ -137,7 +137,7 @@ const speech: SpeechTemplates = {
   ht: [
     '{Name}, yon teritwa nan Karayib la.',
     'Kapital li se {capitale}.',
-    'Gwo vil li yo: {grandes_villes}.',
+    'Lòt gwo vil: {grandes_villes}.',
     'Li fè pati {pays_de_rattachement}.',
     'Gwoup jewografik: {groupe_geographique}.',
     'Rejim politik li: {regime_politique}.',

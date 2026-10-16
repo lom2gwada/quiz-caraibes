@@ -241,7 +241,7 @@ const columnLabels: DataI18n['columnLabels'] = {
   'fuseau horaire': { en: 'time zone', es: 'huso horario', nl: 'tijdzone', ht: 'fiz orè' },
   'groupe geographique': { fr: 'groupe géographique', en: 'geographic group', es: 'grupo geográfico', nl: 'geografische groep', ht: 'gwoup jewografik' },
   'fete nationale': { fr: 'fête nationale', en: 'national day', es: 'fiesta nacional', nl: 'nationale feestdag', ht: 'fèt nasyonal' },
-  'grandes villes': { en: 'major cities', es: 'ciudades principales', nl: 'grote steden', ht: 'gwo vil yo' },
+  'grandes villes': { fr: 'autres grandes villes', en: 'other major cities', es: 'otras ciudades importantes', nl: 'andere grote steden', ht: 'lòt gwo vil' },
   'noms indigenes': { fr: 'noms indigènes', en: 'indigenous names', es: 'nombres indígenas', nl: 'inheemse namen', ht: 'non endijèn' },
 }
 
