@@ -23,8 +23,8 @@ const remote = createRemoteDataset({
     'pays', 'article', 'capitale', 'latitude_deg', 'longitude_deg', 'population', 'superficie_km2',
     'densite_hab_km2', 'pib_mds_usd', 'point_culminant', 'altitude_m', 'monnaie', 'langues',
     'indicatif_telephonique', 'domaine_internet', 'president', 'premier_ministre', 'independance',
-    'regime_politique', 'organisations', 'religions', 'drapeau', 'noms_indigenes', 'statut', 'groupe_geographique',
-    'fete_nationale', 'plus_grande_ville',
+    'regime_politique', 'organisations', 'religions', 'drapeau', 'noms_indigenes', 'pays_de_rattachement', 'groupe_geographique',
+    'fete_nationale', 'grandes_villes',
   ],
 })
 
@@ -42,8 +42,8 @@ const speech: SpeechTemplates = {
   fr: [
     '{Name}, un territoire des Caraïbes.',
     'Sa capitale est {capitale}.',
-    'Sa plus grande ville est {plus_grande_ville}.',
-    'Son statut : {statut}.',
+    'Ses grandes villes : {grandes_villes}.',
+    'Pays de rattachement : {pays_de_rattachement}.',
     'Groupe géographique : {groupe_geographique}.',
     'Son régime politique : {regime_politique}.',
     'Sa population est d’environ {population} habitants.',
@@ -63,8 +63,8 @@ const speech: SpeechTemplates = {
   en: [
     '{Name}, a Caribbean territory.',
     'Its capital is {capitale}.',
-    'Its largest city is {plus_grande_ville}.',
-    'Its status: {statut}.',
+    'Its major cities: {grandes_villes}.',
+    'It belongs to {pays_de_rattachement}.',
     'Geographic group: {groupe_geographique}.',
     'Political system: {regime_politique}.',
     'Its population is about {population}.',
@@ -84,8 +84,8 @@ const speech: SpeechTemplates = {
   es: [
     '{Name}, un territorio del Caribe.',
     'Su capital es {capitale}.',
-    'Su ciudad más grande es {plus_grande_ville}.',
-    'Su estatus: {statut}.',
+    'Sus ciudades principales: {grandes_villes}.',
+    'Pertenece a {pays_de_rattachement}.',
     'Grupo geográfico: {groupe_geographique}.',
     'Su régimen político: {regime_politique}.',
     'Su población es de unos {population} habitantes.',
@@ -105,8 +105,8 @@ const speech: SpeechTemplates = {
   nl: [
     '{Name}, een gebied in het Caribisch gebied.',
     'De hoofdstad is {capitale}.',
-    'De grootste stad is {plus_grande_ville}.',
-    'Status: {statut}.',
+    'Grote steden: {grandes_villes}.',
+    'Het behoort tot {pays_de_rattachement}.',
     'Geografische groep: {groupe_geographique}.',
     'Staatsvorm: {regime_politique}.',
     'Er wonen ongeveer {population} mensen.',
@@ -128,8 +128,8 @@ const speech: SpeechTemplates = {
   ht: [
     '{Name}, yon teritwa nan Karayib la.',
     'Kapital li se {capitale}.',
-    'Pi gwo vil li se {plus_grande_ville}.',
-    'Estati li: {statut}.',
+    'Gwo vil li yo: {grandes_villes}.',
+    'Li fè pati {pays_de_rattachement}.',
     'Gwoup jewografik: {groupe_geographique}.',
     'Rejim politik li: {regime_politique}.',
     'Gen apeprè {population} moun ki rete la.',

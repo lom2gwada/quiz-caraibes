@@ -65,16 +65,20 @@ const values: DataI18n['values'] = {
   'Îles Vierges américaines': { en: 'United States Virgin Islands', es: 'Islas Vírgenes de los Estados Unidos', nl: 'Amerikaanse Maagdeneilanden', ht: 'Zile Vyèj Ameriken yo' },
   'Îles Turques-et-Caïques': { en: 'Turks and Caicos Islands', es: 'Islas Turcas y Caicos', nl: 'Turks- en Caicoseilanden', ht: 'Zile Tik ak Kayik yo' },
 
-  // — villes —
+  // — grandes villes (les capitales sont traduites plus bas) —
   'Belize City': { es: 'Ciudad de Belice', ht: 'Beliz Siti' },
   'Les Abymes': { ht: 'Labim' },
+  'Pointe-à-Pitre': { ht: 'Pwentapit' },
+  'Cap-Haïtien': { ht: 'Okap' },
+  Gonaïves: { ht: 'Gonayiv' },
+  'Santiago de los Caballeros': { ht: 'Santyago' },
+  Guadalajara: { ht: 'Gwadalajara' },
 
-  // — statut —
-  'État souverain': { en: 'Sovereign state', es: 'Estado soberano', nl: 'Soevereine staat', ht: 'Eta souvren' },
-  'Territoire français': { en: 'French territory', es: 'Territorio francés', nl: 'Frans gebied', ht: 'Teritwa franse' },
-  'Territoire néerlandais': { en: 'Dutch territory', es: 'Territorio neerlandés', nl: 'Nederlands gebied', ht: 'Teritwa olandè' },
-  'Territoire britannique': { en: 'British territory', es: 'Territorio británico', nl: 'Brits gebied', ht: 'Teritwa britanik' },
-  'Territoire américain': { en: 'US territory', es: 'Territorio estadounidense', nl: 'Amerikaans gebied', ht: 'Teritwa ameriken' },
+  // — pays de rattachement —
+  France: { en: 'France', es: 'Francia', nl: 'Frankrijk', ht: 'Lafrans' },
+  'Pays-Bas': { en: 'Netherlands', es: 'Países Bajos', nl: 'Nederland', ht: 'Peyi Ba' },
+  'Royaume-Uni': { en: 'United Kingdom', es: 'Reino Unido', nl: 'Verenigd Koninkrijk', ht: 'Wayòm Ini' },
+  'États-Unis': { en: 'United States', es: 'Estados Unidos', nl: 'Verenigde Staten', ht: 'Etazini' },
 
   // — groupes géographiques —
   'Grandes Antilles': { en: 'Greater Antilles', es: 'Antillas Mayores', nl: 'Grote Antillen', ht: 'Gran Zantiy' },
@@ -210,10 +214,10 @@ const columnLabels: DataI18n['columnLabels'] = {
   organisations: { en: 'international organisations', es: 'organizaciones internacionales', nl: 'internationale organisaties', ht: 'òganizasyon entènasyonal' },
   religions: { en: 'religions', es: 'religiones', nl: 'religies', ht: 'relijyon' },
   drapeau: { en: 'flag', es: 'bandera', nl: 'vlag', ht: 'drapo' },
-  statut: { en: 'status', es: 'estatus', nl: 'status', ht: 'estati' },
+  'pays de rattachement': { en: 'parent country', es: 'país de adscripción', nl: 'moederland', ht: 'peyi rataman' },
   'groupe geographique': { fr: 'groupe géographique', en: 'geographic group', es: 'grupo geográfico', nl: 'geografische groep', ht: 'gwoup jewografik' },
   'fete nationale': { fr: 'fête nationale', en: 'national day', es: 'fiesta nacional', nl: 'nationale feestdag', ht: 'fèt nasyonal' },
-  'plus grande ville': { en: 'largest city', es: 'ciudad más grande', nl: 'grootste stad', ht: 'pi gwo vil' },
+  'grandes villes': { en: 'major cities', es: 'ciudades principales', nl: 'grote steden', ht: 'gwo vil yo' },
   'noms indigenes': { fr: 'noms indigènes', en: 'indigenous names', es: 'nombres indígenas', nl: 'inheemse namen', ht: 'non endijèn' },
 }
 
