@@ -54,7 +54,7 @@ const values: DataI18n['values'] = {
   Belize: { es: 'Belice', ht: 'Beliz' },
   Guatemala: { ht: 'Gwatemala' },
   Honduras: { ht: 'Ondiras' },
-  'El Salvador': { ht: 'Salvadò' },
+  Salvador: { en: 'El Salvador', es: 'El Salvador', nl: 'El Salvador', ht: 'Salvadò' },
   Nicaragua: { ht: 'Nikaragwa' },
   'Costa Rica': { ht: 'Kostarika' },
   Panama: { es: 'Panamá' },

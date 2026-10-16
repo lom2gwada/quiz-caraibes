@@ -7,7 +7,7 @@ import fs from 'node:fs'
 const REGION_TS = new URL('../src/data/region.ts', import.meta.url)
 const OUT = new URL('../public/favicon.svg', import.meta.url)
 
-const MAINLAND = new Set(['Belize', 'Guatemala', 'Honduras', 'El Salvador', 'Nicaragua', 'Costa Rica', 'Panama', 'Colombie', 'Venezuela', 'Mexique'])
+const MAINLAND = new Set(['Belize', 'Guatemala', 'Honduras', 'Salvador', 'Nicaragua', 'Costa Rica', 'Panama', 'Colombie', 'Venezuela', 'Mexique'])
 const CANVAS = 320
 const PAD = 4
 // Même échelle que les points de RegionOverviewPage (styles.css .region-overview-dot, mêmes

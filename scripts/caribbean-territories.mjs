@@ -36,7 +36,7 @@ export const MATCH = {
   'Belize': p => p.ADMIN === 'Belize',
   'Guatemala': p => p.ADMIN === 'Guatemala',
   'Honduras': p => p.ADMIN === 'Honduras',
-  'El Salvador': p => p.ADMIN === 'El Salvador',
+  'Salvador': p => p.ADMIN === 'El Salvador',
   'Nicaragua': p => p.ADMIN === 'Nicaragua',
   'Costa Rica': p => p.ADMIN === 'Costa Rica',
   'Panama': p => p.ADMIN === 'Panama',

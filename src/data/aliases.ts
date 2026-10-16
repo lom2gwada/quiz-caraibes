@@ -3,6 +3,7 @@
 // La casse, les accents, les traits d'union / apostrophes et l'article de tête sont déjà tolérés
 // par la normalisation (isCorrect) — n'entrer ici que les vrais synonymes (autre langue, autre nom).
 export const aliases: Record<string, string[]> = {
+  Salvador: ['El Salvador'],
   "Port-d'Espagne": ['Port of Spain'],
   'La Havane': ['Havana', 'La Habana'],
   'Saint-Domingue': ['Santo Domingo'],
