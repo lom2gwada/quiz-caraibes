@@ -407,9 +407,11 @@ describe('generateQuiz', () => {
     expect(label(fixed, 'latitude_deg')).toBe('Latitude de la capitale')
     expect(label(fixed, 'longitude_deg')).toBe('Longitude de la capitale')
     expect(label(fixed, 'altitude_m')).toBe('Altitude du point culminant')
+    expect(label(fixed, 'groupe_geographique')).toBe('Groupe géographique')
+    expect(label(fixed, 'fete_nationale')).toBe('Fête nationale')
     // rien d'autre ne bouge : mêmes questions, mêmes ids, même ordre
     expect(fixed.questions.map((q) => q.id)).toEqual(plain.questions.map((q) => q.id))
-    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident|r[ée]gime|latitude|longitude|altitude|indig[èe]ne/i
+    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident|r[ée]gime|latitude|longitude|altitude|indig[èe]ne|g[ée]ographique|f[êe]te/i
     const untouched = (quiz: typeof plain) => quiz.questions.map((q) => q.question).filter((q) => !corrected.test(q))
     expect(untouched(fixed)).toEqual(untouched(plain))
   })

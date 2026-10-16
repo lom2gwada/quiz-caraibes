@@ -4,6 +4,29 @@ import type { DataI18n } from '@engine'
 // ce qui diffère réellement du français. Locales : en (relu), es / nl / ht (à faire relire par
 // un locuteur natif). À maintenir en même temps que le CSV.
 
+const MONTHS: Record<string, [string, string, string, string]> = {
+  janvier: ['January', 'enero', 'januari', 'janvye'], février: ['February', 'febrero', 'februari', 'fevriye'],
+  mars: ['March', 'marzo', 'maart', 'mas'], avril: ['April', 'abril', 'april', 'avril'], mai: ['May', 'mayo', 'mei', 'me'],
+  juin: ['June', 'junio', 'juni', 'jen'], juillet: ['July', 'julio', 'juli', 'jiyè'], août: ['August', 'agosto', 'augustus', 'out'],
+  septembre: ['September', 'septiembre', 'september', 'septanm'], octobre: ['October', 'octubre', 'oktober', 'oktòb'],
+  novembre: ['November', 'noviembre', 'november', 'novanm'], décembre: ['December', 'diciembre', 'december', 'desanm'],
+}
+const FETES = [
+  '1er janvier', '7 février', '22 février', '27 février', '18 mars', '5 juillet', '10 juillet', '20 juillet', '6 août', '31 août',
+  '15 septembre', '16 septembre', '19 septembre', '21 septembre', '10 octobre', '27 octobre', '1er novembre', '3 novembre',
+  '11 novembre', '30 novembre',
+]
+
+/** Traduit les dates de fête nationale du CSV (« 1er janvier », « 15 septembre »). */
+function dateValues(): DataI18n['values'] {
+  return Object.fromEntries(FETES.map((fr) => {
+    const [dayText, month] = fr.split(' ')
+    const day = parseInt(dayText, 10)
+    const [en, es, nl, ht] = MONTHS[month]
+    return [fr, { en: `${day} ${en}`, es: `${day} de ${es}`, nl: `${day} ${nl}`, ht: `${day === 1 ? '1ye' : day} ${ht}` }]
+  }))
+}
+
 const values: DataI18n['values'] = {
   // — noms de territoires —
   'Antigua-et-Barbuda': { en: 'Antigua and Barbuda', es: 'Antigua y Barbuda', nl: 'Antigua en Barbuda', ht: 'Antigwa ak Barbouda' },
@@ -41,6 +64,28 @@ const values: DataI18n['values'] = {
   'Îles Vierges britanniques': { en: 'British Virgin Islands', es: 'Islas Vírgenes Británicas', nl: 'Britse Maagdeneilanden', ht: 'Zile Vyèj Britanik yo' },
   'Îles Vierges américaines': { en: 'United States Virgin Islands', es: 'Islas Vírgenes de los Estados Unidos', nl: 'Amerikaanse Maagdeneilanden', ht: 'Zile Vyèj Ameriken yo' },
   'Îles Turques-et-Caïques': { en: 'Turks and Caicos Islands', es: 'Islas Turcas y Caicos', nl: 'Turks- en Caicoseilanden', ht: 'Zile Tik ak Kayik yo' },
+
+  // — villes —
+  'Belize City': { es: 'Ciudad de Belice', ht: 'Beliz Siti' },
+  'Les Abymes': { ht: 'Labim' },
+
+  // — statut —
+  'État souverain': { en: 'Sovereign state', es: 'Estado soberano', nl: 'Soevereine staat', ht: 'Eta souvren' },
+  'Territoire français': { en: 'French territory', es: 'Territorio francés', nl: 'Frans gebied', ht: 'Teritwa franse' },
+  'Territoire néerlandais': { en: 'Dutch territory', es: 'Territorio neerlandés', nl: 'Nederlands gebied', ht: 'Teritwa olandè' },
+  'Territoire britannique': { en: 'British territory', es: 'Territorio británico', nl: 'Brits gebied', ht: 'Teritwa britanik' },
+  'Territoire américain': { en: 'US territory', es: 'Territorio estadounidense', nl: 'Amerikaans gebied', ht: 'Teritwa ameriken' },
+
+  // — groupes géographiques —
+  'Grandes Antilles': { en: 'Greater Antilles', es: 'Antillas Mayores', nl: 'Grote Antillen', ht: 'Gran Zantiy' },
+  'Petites Antilles': { en: 'Lesser Antilles', es: 'Antillas Menores', nl: 'Kleine Antillen', ht: 'Ti Zantiy' },
+  'Archipel des Lucayes': { en: 'Lucayan Archipelago', es: 'Archipiélago Lucayo', nl: 'Lucayaanse archipel', ht: 'Achipèl Lukayo' },
+  'Amérique centrale': { en: 'Central America', es: 'América Central', nl: 'Midden-Amerika', ht: 'Amerik Santral' },
+  'Amérique du Sud': { en: 'South America', es: 'América del Sur', nl: 'Zuid-Amerika', ht: 'Amerik disid' },
+  'Amérique du Nord': { en: 'North America', es: 'América del Norte', nl: 'Noord-Amerika', ht: 'Amerik di nò' },
+
+  // — fêtes nationales (« 1er novembre » → « 1 November », « 1 de noviembre »…) —
+  ...dateValues(),
 
   // — capitales —
   'La Havane': { en: 'Havana', es: 'La Habana', nl: 'Havana', ht: 'Lavàn' },
@@ -165,6 +210,10 @@ const columnLabels: DataI18n['columnLabels'] = {
   organisations: { en: 'international organisations', es: 'organizaciones internacionales', nl: 'internationale organisaties', ht: 'òganizasyon entènasyonal' },
   religions: { en: 'religions', es: 'religiones', nl: 'religies', ht: 'relijyon' },
   drapeau: { en: 'flag', es: 'bandera', nl: 'vlag', ht: 'drapo' },
+  statut: { en: 'status', es: 'estatus', nl: 'status', ht: 'estati' },
+  'groupe geographique': { fr: 'groupe géographique', en: 'geographic group', es: 'grupo geográfico', nl: 'geografische groep', ht: 'gwoup jewografik' },
+  'fete nationale': { fr: 'fête nationale', en: 'national day', es: 'fiesta nacional', nl: 'nationale feestdag', ht: 'fèt nasyonal' },
+  'plus grande ville': { en: 'largest city', es: 'ciudad más grande', nl: 'grootste stad', ht: 'pi gwo vil' },
   'noms indigenes': { fr: 'noms indigènes', en: 'indigenous names', es: 'nombres indígenas', nl: 'inheemse namen', ht: 'non endijèn' },
 }
 
