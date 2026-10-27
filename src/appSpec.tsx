@@ -64,6 +64,10 @@ const categoryGroups: CategoryGroup[] = [
   },
 ]
 
+/** Les questions visuelles (drapeau, silhouette, « Cliquez sur X ») ne pèsent que 38 questions chacune contre ~190 pour une catégorie chiffrée,
+ *  alors que ce sont les plus ludiques : dans une partie « toutes catégories », elles font environ une question sur dix. */
+const VISUAL_BOOST = { categories: ['drapeau', 'silhouette', 'map'], share: 0.1 }
+
 /** Filtre « Territoires » de l'accueil : raccourcis par groupe géographique et par pays de rattachement (France = les Antilles
  *  françaises, Pays-Bas = les Antilles néerlandaises…), puis choix un par un. Le défi du jour ne l'utilise pas : il reste sur l'ensemble. */
 const subjectFilter: SubjectFilter = {
@@ -286,6 +290,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     speech,
     categoryGroups,
     subjectFilter,
+    boost: VISUAL_BOOST,
     intro: buildIntro(rows.length),
     // « Cliquez sur X » : tous les territoires ayant une silhouette ou un point sur la carte régionale.
     map: {
