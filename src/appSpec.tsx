@@ -1,5 +1,5 @@
 import { applySchemaConfig, createRemoteDataset, inferSchema } from '@engine'
-import type { CategoryGroup, Dataset, FicheDecorator, QuizAppSpec, Row, SchemaConfig, SpeechTemplates } from '@engine'
+import type { CategoryGroup, Dataset, FicheDecorator, QuizAppSpec, Row, SchemaConfig, SpeechTemplates, SubjectFilter } from '@engine'
 import caribbeanCsv from './data/caribbean.csv?raw'
 import { shapes } from './data/shapes'
 import { aliases } from './data/aliases'
@@ -63,6 +63,16 @@ const categoryGroups: CategoryGroup[] = [
     categories: ['drapeau', 'silhouette', 'map'],
   },
 ]
+
+/** Filtre « Territoires » de l'accueil : raccourcis par groupe géographique et par pays de rattachement (France = les Antilles
+ *  françaises, Pays-Bas = les Antilles néerlandaises…), puis choix un par un. Le défi du jour ne l'utilise pas : il reste sur l'ensemble. */
+const subjectFilter: SubjectFilter = {
+  labels: { fr: 'Territoires', en: 'Territories', es: 'Territorios', nl: 'Gebieden', ht: 'Teritwa' },
+  by: [
+    { column: 'groupe_geographique', labels: { fr: 'Groupe géographique', en: 'Geographic group', es: 'Grupo geográfico', nl: 'Geografische groep', ht: 'Gwoup jewografik' } },
+    { column: 'pays_de_rattachement', labels: { fr: 'Pays de rattachement', en: 'Parent country', es: 'País de adscripción', nl: 'Land waartoe het behoort', ht: 'Peyi ki gen otorite sou li' } },
+  ],
+}
 
 /** Silhouette avant le nom, position sur la carte régionale après (le drapeau vient du moteur). */
 const ficheDecor: FicheDecorator = (row, { canonical, name }) => ({
@@ -275,6 +285,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     ficheDecor,
     speech,
     categoryGroups,
+    subjectFilter,
     intro: buildIntro(rows.length),
     // « Cliquez sur X » : tous les territoires ayant une silhouette ou un point sur la carte régionale.
     map: {
