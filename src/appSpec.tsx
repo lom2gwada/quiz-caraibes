@@ -1,5 +1,5 @@
 import { applySchemaConfig, createRemoteDataset, inferSchema } from '@engine'
-import type { Dataset, FicheDecorator, QuizAppSpec, Row, SchemaConfig, SpeechTemplates } from '@engine'
+import type { CategoryGroup, Dataset, FicheDecorator, QuizAppSpec, Row, SchemaConfig, SpeechTemplates } from '@engine'
 import caribbeanCsv from './data/caribbean.csv?raw'
 import { shapes } from './data/shapes'
 import { aliases } from './data/aliases'
@@ -28,6 +28,41 @@ const remote = createRemoteDataset({
     'principales_ressources', 'fuseau_horaire',
   ],
 })
+
+/** Regroupement des catégories sur l'accueil (une catégorie = une colonne du CSV, plus `silhouette` et `map`). Une colonne
+ *  ajoutée plus tard et non citée ici apparaît dans « Autres » : rien ne disparaît. */
+const categoryGroups: CategoryGroup[] = [
+  {
+    id: 'geographie',
+    labels: { fr: 'Géographie', en: 'Geography', es: 'Geografía', nl: 'Geografie', ht: 'Jewografi' },
+    categories: ['capitale', 'grandes_villes', 'latitude_deg', 'longitude_deg', 'superficie_km2', 'point_culminant', 'altitude_m', 'groupe_geographique'],
+  },
+  {
+    id: 'politique',
+    labels: { fr: 'Politique', en: 'Politics', es: 'Política', nl: 'Politiek', ht: 'Politik' },
+    categories: ['president', 'premier_ministre', 'regime_politique', 'independance', 'fete_nationale', 'pays_de_rattachement', 'organisations'],
+  },
+  {
+    id: 'economie',
+    labels: { fr: 'Économie', en: 'Economy', es: 'Economía', nl: 'Economie', ht: 'Ekonomi' },
+    categories: ['pib_mds_usd', 'monnaie', 'principales_ressources'],
+  },
+  {
+    id: 'societe',
+    labels: { fr: 'Société', en: 'Society', es: 'Sociedad', nl: 'Samenleving', ht: 'Sosyete' },
+    categories: ['population', 'densite_hab_km2', 'langues', 'religions', 'noms_indigenes'],
+  },
+  {
+    id: 'pratique',
+    labels: { fr: 'Infos pratiques', en: 'Practical info', es: 'Datos prácticos', nl: 'Praktisch', ht: 'Enfòmasyon pratik' },
+    categories: ['indicatif_telephonique', 'domaine_internet', 'fuseau_horaire'],
+  },
+  {
+    id: 'visuel',
+    labels: { fr: 'Visuel', en: 'Visual', es: 'Visual', nl: 'Visueel', ht: 'Vizyèl' },
+    categories: ['drapeau', 'silhouette', 'map'],
+  },
+]
 
 /** Silhouette avant le nom, position sur la carte régionale après (le drapeau vient du moteur). */
 const ficheDecor: FicheDecorator = (row, { canonical, name }) => ({
@@ -239,6 +274,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     editable: true,
     ficheDecor,
     speech,
+    categoryGroups,
     intro: buildIntro(rows.length),
     // « Cliquez sur X » : tous les territoires ayant une silhouette ou un point sur la carte régionale.
     map: {
