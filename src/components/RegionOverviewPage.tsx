@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react'
+import type { FocusEvent as ReactFocusEvent, KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react'
 import { makeDatasetI18n, useLocale, useT } from '@engine'
 import type { DataI18n, GenSchema, Row } from '@engine'
 import { formatNumber } from '@engine/utils/number'
@@ -70,6 +70,9 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
   const svgRef = useRef<SVGSVGElement>(null)
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [coords, setCoords] = useState<[number, number] | null>(null)
+  // Territoire sélectionné sans souris : au clavier (point focalisé) ou au premier appui tactile — le second appui ouvre la fiche.
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const pointerTypeRef = useRef('mouse')
 
   const [, , vw, vh] = regionViewBox.split(' ').map(Number)
   const { subjectColumn } = schema
@@ -227,6 +230,7 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
   // Démarre un glisser (recadrage) quand la carte est zoomée — à zoom 1 la fenêtre visible occupe
   // tout le viewBox, glisser n'aurait aucun effet.
   const handleDown = (event: ReactPointerEvent<SVGSVGElement>) => {
+    pointerTypeRef.current = event.pointerType
     wasDraggedRef.current = false // au tactile, un glisser n'émet pas de clic : sans ça il avalerait le tap suivant
     if (event.pointerType === 'touch') {
       if (event.isPrimary) pointersRef.current.clear() // premier doigt = nouveau geste (écarte d'éventuels doigts restés « actifs » à tort)
@@ -259,16 +263,35 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
     const loc = toSvgPoint(event)
     if (!loc) return
     const id = resolveId(event, loc)
-    if (!id) return
+    if (!id) { if (pointerTypeRef.current === 'touch') setSelectedId(null); return }
     if (pick) pick.onPick(id)
+    // Au doigt il n'y a pas de survol pour voir l'étiquette : le premier appui désigne le territoire, le second ouvre sa fiche.
+    else if (pointerTypeRef.current === 'touch' && selectedId !== id) setSelectedId(id)
     else onOpenFiche?.(id)
   }
+
+  // Un point de la carte au clavier : Entrée / Espace = clic.
+  const activate = (id: string) => { if (pick) pick.onPick(id); else onOpenFiche?.(id) }
+  const handlePointKey = (event: ReactKeyboardEvent<SVGCircleElement>, id: string) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    activate(id)
+  }
+  // Focus au clavier : désigne le territoire (étiquette visible) et, si la carte est zoomée, recentre dessus pour qu'on le voie.
+  const handlePointFocus = (event: ReactFocusEvent<SVGCircleElement>, point: CapitalPoint) => {
+    if (!event.currentTarget.matches(':focus-visible')) return
+    setSelectedId(point.canonical)
+    if (zoom > 1 && (point.x < viewMinX || point.x > viewMinX + viewW || point.y < viewMinY || point.y > viewMinY + viewH)) setCenter([point.x, point.y])
+  }
+  const pointLabel = (p: CapitalPoint) => p.capital ? t('regionOverview.pointLabel', { name: p.name, capital: p.capital }) : p.name
 
   const handleZoomIn = () => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP))
   const handleZoomOut = () => setZoom((z) => Math.max(1, z / ZOOM_STEP))
   const handleZoomReset = () => { setZoom(1); setCenter([vw / 2, vh / 2]) }
 
-  const hoverPoint = points.find((p) => p.canonical === hoverId)
+  const activeId = hoverId ?? selectedId
+  const hoverPoint = points.find((p) => p.canonical === activeId)
+  const selectedPoint = pick ? undefined : points.find((p) => p.canonical === selectedId)
   const capitalAbove = hoverPoint ? ((hoverPoint.y - viewMinY) / viewH) > 0.62 : false
   // Ancre de l'étiquette décalée vers l'intérieur près des bords (le point, lui, reste exact) :
   // sinon un territoire proche du bord ferait déborder le texte hors de la carte.
@@ -299,13 +322,13 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
           onPointerCancel={handleUp}
           onClick={handleClick}
           className={svgClass}
-          role="img"
+          role="group"
           aria-label={t('regionOverview.title')}
         >
           {regionContext && <path className="region-context" d={regionContext} aria-hidden="true" />}
           <g className="region-land">
             {Object.entries(region).map(([name, shape]) => shape.d && (
-              <path key={name} data-name={name} d={shape.d} className={name === pick?.selected ? 'region-hl region-picked' : name === hoverId ? 'region-hl' : undefined} />
+              <path key={name} data-name={name} d={shape.d} className={name === pick?.selected ? 'region-hl region-picked' : name === activeId ? 'region-hl' : undefined} />
             ))}
           </g>
           <g className="region-water" aria-hidden="true">
@@ -320,7 +343,12 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
                 data-name={p.canonical}
                 cx={p.x}
                 cy={p.y}
-                className={p.canonical === hoverId || p.canonical === pick?.selected ? 'region-overview-dot is-active' : 'region-overview-dot'}
+                className={p.canonical === activeId || p.canonical === pick?.selected ? 'region-overview-dot is-active' : 'region-overview-dot'}
+                tabIndex={0}
+                role="button"
+                aria-label={pointLabel(p)}
+                onKeyDown={(event) => handlePointKey(event, p.canonical)}
+                onFocus={(event) => handlePointFocus(event, p)}
               />
             ))}
           </g>
@@ -340,6 +368,9 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
             )}
           </>
         )}
+        <ul className="sr-only" aria-label={t('regionOverview.points')}>
+          {points.map((p) => <li key={p.canonical}><button type="button" tabIndex={-1} onClick={() => activate(p.canonical)}>{pointLabel(p)}</button></li>)}
+        </ul>
       </div>
   )
 
@@ -352,6 +383,10 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
       </div>
       <p>{t('regionOverview.hint')}</p>
       {mapBlock}
+      {selectedPoint && <div className="region-overview-selection">
+        <span><strong>{selectedPoint.name}</strong>{selectedPoint.capital && <> · {selectedPoint.capital}</>}</span>
+        <button type="button" onClick={() => activate(selectedPoint.canonical)}>{t('regionOverview.openFiche')}</button>
+      </div>}
     </section>
   )
 }

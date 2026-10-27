@@ -38,6 +38,9 @@
 .region-pick .region-overview-dot { opacity: .35; transition: fill .1s ease, r .1s ease, opacity .1s ease; }
 .region-pick .region-overview-dot.is-active { opacity: 1; }
 .region-overview-dot { fill: var(--text-muted); transition: fill .1s ease, r .1s ease; }
+.region-overview-dot:focus { outline: none; }
+.region-overview-dot:focus-visible { stroke: var(--ink); stroke-width: .7px; }
+.region-overview-selection { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1rem; margin-top: .8rem; padding: .6rem .9rem; background: var(--surface-alt); border: 1px solid var(--border); border-radius: .7rem; }
 .region-overview-dot { r: 1.4px; }
 .region-overview-dot.is-active { fill: var(--accent); r: 2.6px; }
 .region-overview-title { position: absolute; transform: translate(-50%, calc(-100% - 8px)); font-size: .95rem; font-weight: 800; color: var(--ink); text-shadow: 0 1px 4px var(--surface-solid), 0 1px 4px var(--surface-solid); white-space: nowrap; pointer-events: none; }
