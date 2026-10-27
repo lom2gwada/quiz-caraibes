@@ -147,31 +147,6 @@ const values: DataI18n['values'] = {
   'bolívar': { en: 'bolívar', es: 'bolívar', nl: 'bolívar', ht: 'bolivar' },
   'peso mexicain': { en: 'Mexican peso', es: 'peso mexicano', nl: 'Mexicaanse peso', ht: 'peso meksiken' },
 
-  // Transitoire : tant que la table Supabase `caribbean_dataset` garde les monnaies avec article (« le peso cubain »), on les traduit aussi.
-  // À supprimer une fois la colonne `monnaie` mise à jour en base.
-  'le dollar des Caraïbes orientales': { en: 'East Caribbean dollar', es: 'dólar del Caribe Oriental', nl: 'Oost-Caribische dollar', ht: 'dola Karayib de Lès' },
-  'le dollar bahaméen': { en: 'Bahamian dollar', es: 'dólar bahameño', nl: 'Bahamaanse dollar', ht: 'dola Bahamas' },
-  'le dollar barbadien': { en: 'Barbadian dollar', es: 'dólar de Barbados', nl: 'Barbadiaanse dollar', ht: 'dola Barbad' },
-  'le peso cubain': { en: 'Cuban peso', es: 'peso cubano', nl: 'Cubaanse peso', ht: 'peso kiben' },
-  'le dollar jamaïcain': { en: 'Jamaican dollar', es: 'dólar jamaicano', nl: 'Jamaicaanse dollar', ht: 'dola jamayiken' },
-  'le peso dominicain': { en: 'Dominican peso', es: 'peso dominicano', nl: 'Dominicaanse peso', ht: 'peso dominiken' },
-  'la gourde': { en: 'gourde', es: 'gourde', nl: 'gourde', ht: 'goud' },
-  'le dollar de Trinité-et-Tobago': { en: 'Trinidad and Tobago dollar', es: 'dólar de Trinidad y Tobago', nl: 'Trinidad en Tobago-dollar', ht: 'dola Trinidad ak Tobago' },
-  "l'euro": { en: 'euro', es: 'euro', nl: 'euro', ht: 'ero' },
-  'le florin des Antilles néerlandaises': { en: 'Netherlands Antillean guilder', es: 'florín de las Antillas Neerlandesas', nl: 'Nederlands-Antilliaanse gulden', ht: 'florin Antiy Neyèlandè' },
-  'le florin arubais': { en: 'Aruban florin', es: 'florín arubeño', nl: 'Arubaanse florin', ht: 'florin arouba' },
-  'le dollar américain': { en: 'US dollar', es: 'dólar estadounidense', nl: 'Amerikaanse dollar', ht: 'dola ameriken' },
-  'le dollar des îles Caïmans': { en: 'Cayman Islands dollar', es: 'dólar de las Islas Caimán', nl: 'Kaaimaneilandse dollar', ht: 'dola Zile Kayiman' },
-  'le dollar bélizien': { en: 'Belize dollar', es: 'dólar de Belice', nl: 'Belizaanse dollar', ht: 'dola beliz' },
-  'le quetzal': { en: 'quetzal', es: 'quetzal', nl: 'quetzal', ht: 'ketsal' },
-  'le lempira': { en: 'lempira', es: 'lempira', nl: 'lempira', ht: 'lempira' },
-  'le córdoba': { en: 'córdoba', es: 'córdoba', nl: 'córdoba', ht: 'kòdoba' },
-  'le colón costaricien': { en: 'Costa Rican colón', es: 'colón costarricense', nl: 'Costa Ricaanse colón', ht: 'kolon kostariken' },
-  'le balboa': { en: 'balboa', es: 'balboa', nl: 'balboa', ht: 'balboa' },
-  'le peso colombien': { en: 'Colombian peso', es: 'peso colombiano', nl: 'Colombiaanse peso', ht: 'peso kolonbyen' },
-  'le bolívar': { en: 'bolívar', es: 'bolívar', nl: 'bolívar', ht: 'bolivar' },
-  'le peso mexicain': { en: 'Mexican peso', es: 'peso mexicano', nl: 'Mexicaanse peso', ht: 'peso meksiken' },
-
   // — langues (chaque atome d'une cellule multivaleur) —
   anglais: { en: 'English', es: 'inglés', nl: 'Engels', ht: 'angle' },
   espagnol: { en: 'Spanish', es: 'español', nl: 'Spaans', ht: 'panyòl' },
