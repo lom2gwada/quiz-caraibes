@@ -290,6 +290,8 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     speech,
     categoryGroups,
     subjectFilter,
+    // « Abinader » suffit pour « Luis Abinader » (le prénom seul reste refusé).
+    lastNameCategories: ['president', 'premier_ministre'],
     boost: VISUAL_BOOST,
     intro: buildIntro(rows.length),
     // « Cliquez sur X » : tous les territoires ayant une silhouette ou un point sur la carte régionale.
