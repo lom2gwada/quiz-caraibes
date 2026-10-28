@@ -8,7 +8,10 @@ import { region, REGION_VIEWBOX } from './data/region'
 import { regionContext } from './data/regionContext'
 import { CaribbeanBackground } from './components/CaribbeanBackground'
 import { RegionDecor, ShapeDecor } from './components/FicheDecor'
-import { RegionOverviewPage } from './components/RegionOverviewPage'
+import { lazy, Suspense } from 'react'
+
+// La grande carte (≈ 12 Ko) n'est chargée qu'à l'ouverture de la vue ou d'une question « Cliquez sur X ».
+const RegionOverviewPage = lazy(() => import('./components/RegionOverviewPage').then((m) => ({ default: m.RegionOverviewPage })))
 
 const CAPITAL_COLUMN = 'capitale'
 
@@ -298,7 +301,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     map: {
       targets: Object.keys(region),
       render: ({ selected, onPick }) => (
-        <RegionOverviewPage
+        <Suspense fallback={null}><RegionOverviewPage
           rows={rows}
           schema={schema}
           region={region}
@@ -309,7 +312,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
           longitudeColumn="longitude_deg"
           i18n={caribbeanI18n}
           pick={{ selected, onPick }}
-        />
+        /></Suspense>
       ),
     },
     views: [{
@@ -318,7 +321,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
       labelKey: 'nav.map',
       entry: 'atlas',
       render: ({ dataset, openFiche, back }) => (
-        <RegionOverviewPage
+        <Suspense fallback={null}><RegionOverviewPage
           rows={dataset.rows}
           schema={dataset.schema}
           region={region}
@@ -330,7 +333,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
           i18n={dataset.i18n}
           onOpenFiche={openFiche}
           onBack={back}
-        />
+        /></Suspense>
       ),
     }],
   }

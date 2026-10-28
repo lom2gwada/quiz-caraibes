@@ -25,6 +25,18 @@ export default defineConfig({
       { find: /^@engine\//, replacement: fileURLToPath(new URL('./engine/src/', import.meta.url)) },
     ],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Bibliothèques à part : elles ne changent presque jamais, donc restent en cache du navigateur quand seul le code de l'appli est redéployé
+        // (supabase-js ≈ 220 Ko, React ≈ 150 Ko : près de la moitié du JS au démarrage).
+        manualChunks(id: string) {
+          if (id.includes('node_modules/@supabase')) return 'vendor-supabase'
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/') || id.includes('node_modules/scheduler')) return 'vendor-react'
+        },
+      },
+    },
+  },
   define: {
     __COMMIT_HASH__: JSON.stringify(commitHash()),
   },
