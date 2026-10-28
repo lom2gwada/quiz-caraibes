@@ -29,6 +29,23 @@ const DATA_INFO: DataInfo = {
 }
 ```
 
+### Le PIB (`pib_mds_usd`)
+
+En milliards de dollars courants, **millésime 2023**, arrondi à l'entier à partir de 10 Md$ et à **une décimale** en dessous (« 1,4 »), pour que les petits territoires restent distinguables. Source : Banque mondiale (`NY.GDP.MKTP.CD`) pour tout ce qu'elle publie. Exceptions, faute de série 2023 :
+
+| Territoire | Valeur | Source |
+|---|---|---|
+| Guadeloupe | 11 | INSEE / CEROM, comptes rapides 2023 : 10 410 M€, converti à 1,081 $/€ (moyenne 2023) |
+| Martinique | 11 | CEROM 2023 : PIB par habitant 28 600 € × population moyenne 351 700 ≈ 10,06 Md€, converti de même (estimation) |
+| Saint-Barthélemy | 1,0 | IEDOM / CEROM, PIB 2023 : 960,5 M€, converti de même |
+| Saint-Martin | 0,6 | Banque mondiale, **2021** (pas de donnée plus récente) |
+| Bonaire | 0,7 | CBS (Pays-Bas), tableau 84789NED, 2023 : 722 M$ |
+| Anguilla, Montserrat, îles Vierges britanniques | 0,4 · 0,1 · 1,5 | ONU (comptes nationaux), 2023 |
+| îles Vierges américaines | 4,7 | Banque mondiale, **2022** |
+| Cuba | 107 | Banque mondiale, **2020** (dernière donnée publiée) |
+
+À la révision suivante, prendre le millésime le plus récent de la Banque mondiale pour tout le monde, puis mettre à jour ce tableau.
+
 Supprimer `dataInfo` du `Dataset` retire toute mention. Les valeurs qui changent (président, Premier ministre, population, PIB…) se révisent par exemple une fois par an : mettre à jour le CSV **et** la table, puis la date.
 
 ## Architecture

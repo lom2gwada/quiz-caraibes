@@ -70,8 +70,10 @@ const categoryGroups: CategoryGroup[] = [
 /** Date de mise à jour de l'ensemble des données (CSV et table Supabase) et leurs sources, affichées sur les fiches, la page Fiches, l'accueil et la
  *  correction. **À mettre à jour** à chaque révision des données (voir « Données » dans le README). */
 const DATA_INFO: DataInfo = {
-  updatedAt: '2026-10-27',
+  updatedAt: '2026-10-28',
   sources: [
+    { label: 'Banque mondiale (PIB 2023)', url: 'https://data.worldbank.org/indicator/NY.GDP.MKTP.CD' },
+    { label: 'INSEE, IEDOM, CBS, ONU (PIB des territoires absents de la Banque mondiale)' },
     { label: 'Wikimedia Commons (drapeaux et armoiries)', url: 'https://commons.wikimedia.org' },
     { label: 'Natural Earth (contours et carte)', url: 'https://www.naturalearthdata.com' },
   ],
