@@ -18,6 +18,19 @@ L'idée : au lieu d'écrire chaque question à la main, on charge un CSV (une li
 - Questions visuelles : drapeaux (URLs Wikimedia) et **silhouettes** de territoires ([`src/data/shapes.ts`](src/data/shapes.ts), contours Natural Earth générés par [`scripts/build-shapes.mjs`](scripts/build-shapes.mjs))
 - Sur chaque fiche, petite **carte de positionnement** dans les Caraïbes ([`src/data/region.ts`](src/data/region.ts), même source Natural Earth mais projection partagée entre tous les territoires, générée par [`scripts/build-region.mjs`](scripts/build-region.mjs)) ; les micro-territoires trop petits pour rester lisibles n'affichent qu'un point d'accent
 
+## Données : date de mise à jour et sources
+
+Une seule date pour l'ensemble des données et une liste de sources sont affichées sur les fiches, la page Fiches, l'accueil et la correction (« Données mises à jour le 27 octobre 2026. Sources : … »). Elles se règlent dans [`src/appSpec.tsx`](src/appSpec.tsx), constante `DATA_INFO` :
+
+```ts
+const DATA_INFO: DataInfo = {
+  updatedAt: '2026-10-27', // AAAA-MM-JJ : à changer à chaque révision des données (CSV et table Supabase `quiz_forge_caribbean_dataset`)
+  sources: [{ label: 'Nom de la source', url: 'https://…' }], // le lien est facultatif ; liste vide ou absente = aucune mention de source
+}
+```
+
+Supprimer `dataInfo` du `Dataset` retire toute mention. Les valeurs qui changent (président, Premier ministre, population, PIB…) se révisent par exemple une fois par an : mettre à jour le CSV **et** la table, puis la date.
+
 ## Architecture
 
 Cette appli est un **jeu de données + des vues** posés sur le moteur commun [`quiz-engine`](https://github.com/lom2gwada/quiz-engine), inclus comme sous-module git dans `engine/` (génération de quiz, jeu, historique, classement, connexion, liens invités, édition admin, i18n…).

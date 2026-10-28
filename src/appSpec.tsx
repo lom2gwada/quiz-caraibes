@@ -1,5 +1,5 @@
 import { applySchemaConfig, createRemoteDataset, inferSchema } from '@engine'
-import type { CategoryGroup, Dataset, FicheDecorator, QuizAppSpec, Row, SchemaConfig, SpeechTemplates, SubjectFilter } from '@engine'
+import type { CategoryGroup, DataInfo, Dataset, FicheDecorator, QuizAppSpec, Row, SchemaConfig, SpeechTemplates, SubjectFilter } from '@engine'
 import caribbeanCsv from './data/caribbean.csv?raw'
 import { shapes } from './data/shapes'
 import { aliases } from './data/aliases'
@@ -66,6 +66,16 @@ const categoryGroups: CategoryGroup[] = [
     categories: ['drapeau', 'silhouette', 'map'],
   },
 ]
+
+/** Date de mise à jour de l'ensemble des données (CSV et table Supabase) et leurs sources, affichées sur les fiches, la page Fiches, l'accueil et la
+ *  correction. **À mettre à jour** à chaque révision des données (voir « Données » dans le README). */
+const DATA_INFO: DataInfo = {
+  updatedAt: '2026-10-27',
+  sources: [
+    { label: 'Wikimedia Commons (drapeaux et armoiries)', url: 'https://commons.wikimedia.org' },
+    { label: 'Natural Earth (contours et carte)', url: 'https://www.naturalearthdata.com' },
+  ],
+}
 
 /** Les questions visuelles (drapeau, silhouette, « Cliquez sur X ») ne pèsent que 38 questions chacune contre ~190 pour une catégorie chiffrée,
  *  alors que ce sont les plus ludiques : dans une partie « toutes catégories », elles font environ une question sur dix. */
@@ -296,6 +306,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     // « Abinader » suffit pour « Luis Abinader » (le prénom seul reste refusé).
     lastNameCategories: ['president', 'premier_ministre'],
     boost: VISUAL_BOOST,
+    dataInfo: DATA_INFO,
     intro: buildIntro(rows.length),
     // « Cliquez sur X » : tous les territoires ayant une silhouette ou un point sur la carte régionale.
     map: {
