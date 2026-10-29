@@ -21,7 +21,7 @@ interface RegionOverviewPageProps {
   onBack?: () => void
   /** Mode « Cliquez sur X » (question de quiz) : plus de titre, d'indice, de coordonnées ni d'étiquettes (elles donneraient la
    *  réponse) ; un clic désigne un territoire au lieu d'ouvrir sa fiche. */
-  pick?: { selected?: string; onPick: (name: string) => void }
+  pick?: { selected?: string; onPick: (name: string) => void; /** Correction : la bonne réponse (vert) et celle du joueur (rouge) sont montrées, la carte n'est plus cliquable. */ review?: { target: string } }
   /** Ouvre la fiche du territoire survolé au clic. Reçoit la valeur FR canonique. */
   onOpenFiche?: (name: string) => void
 }
@@ -264,6 +264,7 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
     if (!loc) return
     const id = resolveId(event, loc)
     if (!id) { if (pointerTypeRef.current === 'touch') setSelectedId(null); return }
+    if (pick?.review) return
     if (pick) pick.onPick(id)
     // Au doigt il n'y a pas de survol pour voir l'étiquette : le premier appui désigne le territoire, le second ouvre sa fiche.
     else if (pointerTypeRef.current === 'touch' && selectedId !== id) setSelectedId(id)
@@ -271,7 +272,7 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
   }
 
   // Un point de la carte au clavier : Entrée / Espace = clic.
-  const activate = (id: string) => { if (pick) pick.onPick(id); else onOpenFiche?.(id) }
+  const activate = (id: string) => { if (pick?.review) return; if (pick) pick.onPick(id); else onOpenFiche?.(id) }
   const handlePointKey = (event: ReactKeyboardEvent<SVGCircleElement>, id: string) => {
     if (event.key !== 'Enter' && event.key !== ' ') return
     event.preventDefault()
@@ -328,7 +329,7 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
           {regionContext && <path className="region-context" d={regionContext} aria-hidden="true" />}
           <g className="region-land">
             {Object.entries(region).map(([name, shape]) => shape.d && (
-              <path key={name} data-name={name} d={shape.d} className={name === pick?.selected ? 'region-hl region-picked' : name === activeId ? 'region-hl' : undefined} />
+              <path key={name} data-name={name} d={shape.d} className={pick?.review ? (name === pick.review.target ? 'region-hl region-target' : name === pick.selected ? 'region-hl region-wrong' : undefined) : name === pick?.selected ? 'region-hl region-picked' : name === activeId ? 'region-hl' : undefined} />
             ))}
           </g>
           <g className="region-water" aria-hidden="true">
@@ -343,7 +344,7 @@ export function RegionOverviewPage({ rows, schema, region, regionContext, region
                 data-name={p.canonical}
                 cx={p.x}
                 cy={p.y}
-                className={p.canonical === activeId || p.canonical === pick?.selected ? 'region-overview-dot is-active' : 'region-overview-dot'}
+                className={pick?.review ? (p.canonical === pick.review.target ? 'region-overview-dot is-target' : p.canonical === pick.selected ? 'region-overview-dot is-wrong' : 'region-overview-dot') : p.canonical === activeId || p.canonical === pick?.selected ? 'region-overview-dot is-active' : 'region-overview-dot'}
                 tabIndex={0}
                 role="button"
                 aria-label={pointLabel(p)}

@@ -33,6 +33,11 @@
    espacé, jamais interactif — il suit juste zoom/glisser comme le reste du contenu du SVG. */
 .region-water text { font-size: 5px; font-style: italic; font-weight: 600; letter-spacing: .12em; fill: var(--text-muted); opacity: .6; pointer-events: none; }
 .region-pick { margin-top: 1rem; }
+.region-land .region-target { fill: var(--success); stroke: var(--ink); stroke-width: .7; }
+.region-land .region-wrong { fill: var(--error); stroke: var(--ink); stroke-width: .7; }
+.region-pick .region-overview-dot.is-target, .region-pick .region-overview-dot.is-wrong { opacity: 1; r: 3.4px; stroke: var(--ink); stroke-width: .7px; }
+.region-pick .region-overview-dot.is-target { fill: var(--success); }
+.region-pick .region-overview-dot.is-wrong { fill: var(--error); }
 .region-land .region-picked { fill: currentColor; stroke: var(--ink); stroke-width: .7; }
 /* Question « Cliquez sur X » : points des capitales discrets (ils restent pleinement visibles au survol et une fois choisis). */
 .region-pick .region-overview-dot { opacity: .35; transition: fill .1s ease, r .1s ease, opacity .1s ease; }

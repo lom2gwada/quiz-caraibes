@@ -313,7 +313,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
     // « Cliquez sur X » : tous les territoires ayant une silhouette ou un point sur la carte régionale.
     map: {
       targets: Object.keys(region),
-      render: ({ selected, onPick }) => (
+      render: ({ target, selected, onPick, review }) => (
         <Suspense fallback={null}><RegionOverviewPage
           rows={rows}
           schema={schema}
@@ -324,7 +324,7 @@ function buildDataset(rows: Row[], schemaConfig: SchemaConfig | null): Dataset {
           latitudeColumn="latitude_deg"
           longitudeColumn="longitude_deg"
           i18n={caribbeanI18n}
-          pick={{ selected, onPick }}
+          pick={{ selected, onPick, review: review ? { target } : undefined }}
         /></Suspense>
       ),
     },
